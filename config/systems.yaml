@@ -1,0 +1,756 @@
+systems:
+- folder: megadrive
+  ra_console_id: 1
+  ra_name: Genesis/Mega Drive
+  hash_method: raw
+  extensions:
+  - .md
+  - .gen
+  - .bin
+  - .smd
+  emulators:
+  - Genesis Plus GX
+  - PicoDrive
+- folder: mastersystem
+  ra_console_id: 11
+  ra_name: Master System
+  hash_method: raw
+  extensions:
+  - .sms
+  emulators:
+  - Genesis Plus GX
+  - Gearsystem
+- folder: gamegear
+  ra_console_id: 15
+  ra_name: Game Gear
+  hash_method: raw
+  extensions:
+  - .gg
+  emulators:
+  - Genesis Plus GX
+  - Gearsystem
+- folder: sega32x
+  ra_console_id: 10
+  ra_name: 32X
+  hash_method: raw
+  extensions:
+  - .32x
+  - .bin
+  - .zip
+  emulators:
+  - PicoDrive
+- folder: saturn
+  ra_console_id: 39
+  ra_name: Saturn
+  hash_method: saturn_chd
+  extensions:
+  - .chd
+  - .cue
+  - .bin
+  - .iso
+  emulators:
+  - Beetle Saturn
+  - Kronos
+- folder: dreamcast
+  ra_console_id: 40
+  ra_name: Dreamcast
+  hash_method: dreamcast_chd
+  extensions:
+  - .chd
+  - .gdi
+  - .cue
+  - .cdi
+  - .bin
+  emulators:
+  - Flycast
+- folder: nes
+  ra_console_id: 7
+  ra_name: NES/Famicom
+  hash_method: nes
+  extensions:
+  - .nes
+  - .fds
+  emulators:
+  - Mesen
+  - FCEUmm
+  - QuickNES
+- folder: snes
+  ra_console_id: 3
+  ra_name: SNES/Super Famicom
+  hash_method: snes
+  extensions:
+  - .sfc
+  - .smc
+  - .fig
+  emulators:
+  - Snes9x
+  - Mesen-S
+  library_exclude:         # Satellaview + Sufami Turbo games (by hash) belong to their own folders
+  - satellaview
+  - sufami
+- folder: n64
+  ra_console_id: 2
+  ra_name: Nintendo 64
+  hash_method: n64
+  extensions:
+  - .z64
+  - .n64
+  - .v64
+  emulators:
+  - Mupen64Plus-Next
+  - ParaLLEl N64
+  library_exclude:         # N64DD games (by No-Intro hash) belong to their own folder
+  - n64dd
+- folder: gb
+  ra_console_id: 4
+  ra_name: Game Boy
+  hash_method: raw
+  extensions:
+  - .gb
+  emulators:
+  - Gambatte
+  - Gearboy
+  - mGBA
+  - VBA-M
+- folder: gbc
+  ra_console_id: 6
+  ra_name: Game Boy Color
+  hash_method: raw
+  extensions:
+  - .gbc
+  emulators:
+  - Gambatte
+  - Gearboy
+  - mGBA
+  - VBA-M
+- folder: gba
+  ra_console_id: 5
+  ra_name: Game Boy Advance
+  hash_method: raw
+  extensions:
+  - .gba
+  emulators:
+  - mGBA
+  - VBA-M
+  - VBA Next
+- folder: nds
+  ra_console_id: 18
+  ra_name: Nintendo DS
+  hash_method: nds
+  extensions:
+  - .nds
+  - .zip
+  emulators:
+  - melonDS
+  - melonDS DS
+  - DeSmuME
+- folder: gamecube
+  ra_console_id: 16
+  ra_name: GameCube
+  hash_method: gamecube
+  extensions:
+  - .rvz
+  - .iso
+  - .7z
+  emulators:
+  - Dolphin (standalone)
+- folder: wii
+  ra_console_id: 19
+  ra_name: Wii
+  hash_method: wii
+  extensions:
+  - .wad
+  - .chd
+  - .iso
+  - .rvz
+  - .zip
+  emulators:
+  - Dolphin (standalone)
+- folder: virtualboy
+  ra_console_id: 28
+  ra_name: Virtual Boy
+  hash_method: raw
+  extensions:
+  - .vb
+  emulators:
+  - Beetle VB
+- folder: pokemini
+  ra_console_id: 24
+  ra_name: Pokemon Mini
+  hash_method: raw
+  extensions:
+  - .min
+  emulators:
+  - PokeMini
+- folder: psx
+  ra_console_id: 12
+  ra_name: PlayStation
+  hash_method: psx_chd
+  extensions:
+  - .chd
+  - .cue
+  - .bin
+  - .iso
+  - .zip
+  emulators:
+  - Beetle PSX HW
+  - Beetle PSX
+  - SwanStation
+  - DuckStation (standalone)
+- folder: ps2
+  ra_console_id: 21
+  ra_name: PlayStation 2
+  hash_method: ps2
+  extensions:
+  - .chd
+  - .iso
+  - .cue
+  - .bin
+  emulators:
+  - PCSX2 (standalone)
+- folder: psp
+  ra_console_id: 41
+  ra_name: PlayStation Portable
+  hash_method: psp
+  extensions:
+  - .iso
+  - .cso
+  - .chd
+  # PSP homebrew ships as a bare EBOOT.PBP and RA hashes that file directly. The psp hasher
+  # has always read it, but .pbp was absent here, so _iter_rom_files skipped every one and
+  # they could never be ingested — five of the nine missing PSP games were homebrew.
+  - .pbp
+  emulators:
+  - PPSSPP
+  - PPSSPP (standalone)
+- folder: atari2600
+  ra_console_id: 25
+  ra_name: Atari 2600
+  hash_method: raw
+  extensions:
+  - .a26
+  - .bin
+  emulators:
+  - Stella
+- folder: atari7800
+  ra_console_id: 51
+  ra_name: Atari 7800
+  hash_method: raw
+  extensions:
+  - .a78
+  - .bin
+  emulators:
+  - ProSystem
+- folder: atarilynx
+  ra_console_id: 13
+  ra_name: Atari Lynx
+  hash_method: lynx
+  extensions:
+  - .lnx
+  - .lyx
+  - .o
+  - .zip
+  emulators:
+  - Beetle Lynx
+  - Handy
+- folder: jaguar
+  ra_console_id: 17
+  ra_name: Atari Jaguar
+  hash_method: raw
+  extensions:
+  - .j64
+  - .bin
+  - .rom
+  emulators:
+  - Virtual Jaguar
+- folder: pcengine
+  ra_console_id: 8
+  ra_name: PC Engine/TurboGrafx-16
+  hash_method: raw
+  extensions:
+  - .pce
+  emulators:
+  - Beetle SuperGrafx
+  - Beetle PCE Fast
+  - Geargrafx
+  library_exclude:         # RA gates SuperGrafx under PC Engine (console 8) — keep its 5 games out of pcengine
+  - supergrafx
+- folder: pcenginecd
+  ra_console_id: 76
+  ra_name: PC Engine CD/TurboGrafx-CD
+  hash_method: pcenginecd_chd
+  extensions:
+  - .chd
+  - .cue
+  emulators:
+  - Beetle SuperGrafx
+  - Beetle PCE Fast
+- folder: neogeo
+  ra_console_id: 27
+  ra_name: SNK Neo Geo AES
+  hash_method: arcade
+  library_include:
+  - neogeo
+  extensions:
+  - .zip
+  - .bin
+  emulators:
+  - FinalBurn Neo
+  - Geolith
+- folder: neogeomvs
+  ra_console_id: 27
+  ra_name: SNK Neo Geo MVS
+  hash_method: arcade
+  # MVS-exclusive Neo Geo titles (never released on the AES home cart). Authority =
+  # the neo-geo.com Master List (MVS date present + both JPN/ENG Home columns empty).
+  # Routed by the library/neogeomvs.txt arcade-hash split; everything else stays AES.
+  library_include:
+  - neogeomvs
+  extensions:
+  - .zip
+  - .bin
+  emulators:
+  - FinalBurn Neo
+  - Geolith
+- folder: colecovision
+  ra_console_id: 44
+  ra_name: ColecoVision
+  hash_method: raw
+  extensions:
+  - .col
+  - .bin
+  emulators:
+  - blueMSX
+  - Gearcoleco
+- folder: intellivision
+  ra_console_id: 45
+  ra_name: Intellivision
+  hash_method: raw
+  extensions:
+  - .int
+  - .bin
+  emulators:
+  - FreeIntv
+- folder: wonderswan
+  ra_console_id: 53        # RA combines WonderSwan + WonderSwan Color under one console; split by hash-name ext
+  ra_name: WonderSwan
+  hash_method: raw
+  extensions:
+  - .ws
+  - .zip
+  emulators:
+  - Beetle Cygne
+  name_include:            # mono WonderSwan games only (RA hash names end in .ws)
+  - .ws
+- folder: wonderswancolor
+  ra_console_id: 53
+  ra_name: WonderSwan Color
+  hash_method: raw
+  extensions:
+  - .wsc
+  - .zip
+  emulators:
+  - Beetle Cygne
+  name_exclude:            # everything that is NOT a mono .ws game (Color .wsc + oddballs)
+  - .ws
+- folder: arcade
+  ra_console_id: 27
+  ra_name: Arcade
+  hash_method: arcade
+  library_exclude:
+  - neogeo
+  - neogeomvs
+  - naomi
+  - naomi2
+  - atomiswave
+  extensions:
+  - .zip
+  emulators:
+  - FinalBurn Neo
+- folder: dos
+  ra_console_id: 26
+  ra_name: MS-DOS
+  hash_method: dos
+  extensions:
+  - .dosz
+  emulators:
+  - DOSBox-Pure
+- folder: c64
+  ra_console_id: 30
+  ra_name: Commodore 64
+  hash_method: c64
+  extensions:
+  - .d64
+  - .t64
+  - .prg
+  - .crt
+  - .g64
+  - .d81
+  - .tap
+  - .nib
+  - .zip
+  emulators:
+  - VICE x64sc
+- folder: 3ds
+  ra_console_id: 62
+  ra_name: Nintendo 3DS
+  hash_method: n3ds
+  extensions:
+  - .3ds
+  - .cci
+  - .cxi
+  - .cia
+  - .3dsx
+  - .app
+  emulators:
+  - Citra
+  - Lime3DS
+- folder: 3do
+  ra_console_id: 43
+  ra_name: 3DO Interactive Multiplayer
+  hash_method: 3do_chd
+  extensions:
+  - .chd
+  - .iso
+  emulators:
+  - Opera
+- folder: amstradcpc
+  ra_console_id: 37
+  ra_name: Amstrad CPC
+  hash_method: raw
+  extensions:
+  - .dsk
+  - .zip
+  emulators:
+  - Caprice32
+- folder: appleii
+  ra_console_id: 38
+  ra_name: Apple II
+  hash_method: raw
+  extensions:
+  - .dsk
+  - .zip
+  emulators:
+  - RAppleWin (standalone)
+- folder: arcadia2001
+  ra_console_id: 73
+  ra_name: Arcadia 2001
+  hash_method: raw
+  extensions:
+  - .bin
+  - .zip
+  emulators:
+  - AmiArcadia
+- folder: arduboy
+  ra_console_id: 71
+  ra_name: Arduboy
+  hash_method: arduboy
+  extensions:
+  - .hex
+  - .arduboy
+  - .zip
+  emulators:
+  - Ardens
+  - Arduous
+- folder: jaguarcd
+  ra_console_id: 77
+  ra_name: Atari Jaguar CD
+  # Stored RAW (no CHD): BizHawk (RA emulator) and BigPEmu (Batocera) both load .cue/.bin
+  # and .cdi, but neither loads CHD for Jaguar CD, and their compressed formats (7z vs
+  # .bigpimg) are mutually exclusive — so raw is the only cross-compatible option.
+  hash_method: jaguarcd
+  extensions:
+  - .cue
+  - .cdi
+  emulators:
+  - Virtual Jaguar (BizHawk)
+  - BigPEmu
+- folder: channelf
+  ra_console_id: 57
+  ra_name: Fairchild Channel F
+  hash_method: raw
+  extensions:
+  - .bin
+  - .zip
+  emulators:
+  - FreeChaF
+- folder: megaduck
+  ra_console_id: 69
+  ra_name: Mega Duck
+  hash_method: raw
+  extensions:
+  - .bin
+  - .zip
+  emulators:
+  - SameDuck
+- folder: msx
+  ra_console_id: 29
+  ra_name: MSX
+  hash_method: raw
+  extensions:
+  - .rom
+  - .zip
+  emulators:
+  - blueMSX
+  library_exclude:         # MSX2 games share RA console 29 — route them to their own system
+  - msx2
+- folder: msx2
+  ra_console_id: 29        # shares console 29 with MSX; split by the No-Intro MSX2 hash set
+  ra_name: MSX2
+  hash_method: raw
+  extensions:
+  - .rom
+  - .mx1
+  - .mx2
+  - .zip
+  emulators:
+  - blueMSX
+  library_include:
+  - msx2
+- folder: ndsi
+  ra_console_id: 78
+  ra_name: Nintendo DSi
+  hash_method: nds
+  extensions:
+  - .nds
+  - .zip
+  emulators:
+  - melonDS
+  - melonDS DS
+- folder: neogeocd
+  ra_console_id: 56
+  ra_name: Neo Geo CD
+  hash_method: neogeocd_chd
+  extensions:
+  - .chd
+  emulators:
+  - NeoCD
+  - FinalBurn Neo
+- folder: odyssey2
+  ra_console_id: 23
+  ra_name: Magnavox Odyssey 2
+  hash_method: raw
+  extensions:
+  - .bin
+  - .zip
+  emulators:
+  - O2EM
+- folder: pc8800
+  ra_console_id: 47
+  ra_name: PC-8000/8800
+  hash_method: pc88
+  extensions:
+  - .d88
+  - .zip
+  emulators:
+  - QUASI88
+- folder: pcfx
+  ra_console_id: 49
+  ra_name: PC-FX
+  hash_method: pcfx_chd
+  extensions:
+  - .chd
+  emulators:
+  - Beetle PC-FX
+- folder: supervision
+  ra_console_id: 63
+  ra_name: Watara Supervision
+  hash_method: raw
+  extensions:
+  - .sv
+  - .zip
+  emulators:
+  - Potator
+- folder: uzebox
+  ra_console_id: 80
+  ra_name: Uzebox
+  hash_method: raw
+  extensions:
+  - .uze
+  - .zip
+  emulators:
+  - Uzem
+- folder: vectrex
+  ra_console_id: 46
+  ra_name: Vectrex
+  hash_method: raw
+  extensions:
+  - .vec
+  - .bin
+  - .zip
+  emulators:
+  - vecx
+- folder: wasm4
+  ra_console_id: 72
+  ra_name: WASM-4
+  hash_method: raw
+  extensions:
+  - .wasm
+  - .zip
+  emulators:
+  - WASM-4
+- folder: sg1000
+  ra_console_id: 33
+  ra_name: SG-1000
+  hash_method: raw
+  extensions:
+  - .sg
+  - .bin
+  - .zip
+  emulators:
+  - Genesis Plus GX
+  - blueMSX
+- folder: fds
+  ra_console_id: 81
+  ra_name: Famicom Disk System
+  hash_method: nes
+  extensions:
+  - .fds
+  - .nes
+  emulators:
+  - Mesen
+  - FCEUmm
+- folder: ngp
+  ra_console_id: 14        # RA combines NGP + NGPC under one console; split by hash-name ext
+  ra_name: Neo Geo Pocket
+  hash_method: raw
+  extensions:
+  - .ngp
+  - .ngc
+  - .zip
+  emulators:
+  - Beetle NeoPop
+  name_include:            # mono NGP games only (RA hash names end in .ngp)
+  - .ngp
+- folder: ngpc
+  ra_console_id: 14
+  ra_name: Neo Geo Pocket Color
+  hash_method: raw
+  extensions:
+  - .ngp
+  - .ngc
+  - .zip
+  emulators:
+  - Beetle NeoPop
+  name_exclude:            # everything that is NOT a mono .ngp game (color + oddballs)
+  - .ngp
+- folder: satellaview
+  ra_console_id: 3        # shares SNES console; split by .bs hash-name extension
+  ra_name: Satellaview
+  hash_method: snes
+  extensions:
+  - .bs
+  - .zip
+  emulators:
+  - Snes9x
+  - Mesen-S
+  library_include:        # Satellaview games identified by No-Intro Satellaview hash set
+  - satellaview
+- folder: sufami
+  ra_console_id: 3
+  ra_name: SNES/Super Famicom
+  hash_method: snes
+  extensions:
+  - .sfc
+  - .smc
+  - .zip
+  emulators:
+  - Snes9x
+  - Mesen-S
+  library_include:        # SuFami Turbo games: 13 No-Intro Sufami Turbo hashes + RA's (ST)(GTConversion) hashes
+  - sufami
+- folder: n64dd
+  ra_console_id: 2        # shares N64 console; split by .ndd hash-name extension
+  ra_name: Nintendo 64DD
+  hash_method: n64
+  extensions:
+  - .ndd
+  - .zip
+  emulators:
+  - Mupen64Plus-Next
+  library_include:        # N64DD games identified by No-Intro N64DD hash set
+  - n64dd
+- folder: supergrafx
+  ra_console_id: 8
+  ra_name: SuperGrafx        # RA lumps it under PC Engine (console 8); show it as its own system
+  hash_method: raw
+  extensions:
+  - .pce
+  - .sgx
+  - .zip
+  emulators:
+  - Beetle SuperGrafx
+  - Geargrafx
+  library_include:         # only the SuperGrafx No-Intro hash set (shares console 8 with pcengine)
+  - supergrafx
+  # SuperGrafx set = the 5 SGX-exclusive games (Aldynes, Battle Ace, 1941 Counter Attack,
+  # Daimakaimura/Ghouls'n Ghosts, Madou King Granzort). The only other SGX-hardware title is
+  # Darius Plus (a HuCard with an SGX-enhanced mode). RA has NO set for Darius Plus yet, so it
+  # can't be gated here. TODO: if RA ever adds a Darius Plus set, add its md5 to
+  # backend/app/data/library/supergrafx.txt to route it to SuperGrafx instead of pcengine.
+- folder: interton
+  ra_console_id: 74
+  ra_name: Interton VC 4000
+  hash_method: raw
+  extensions:
+  - .bin
+  - .zip
+  emulators:
+  - AmiArcadia
+- folder: elektor
+  ra_console_id: 75
+  ra_name: Elektor TV Games Computer
+  hash_method: raw
+  extensions:
+  - .bin
+  - .tvc
+  - .pgm
+  - .zip
+  emulators:
+  - AmiArcadia
+- folder: megacd
+  ra_console_id: 9
+  ra_name: Sega CD
+  hash_method: segacd_chd
+  extensions:
+  - .chd
+  - .cue
+  - .bin
+  emulators:
+  - Genesis Plus GX
+  - PicoDrive
+- folder: naomi
+  ra_console_id: 27
+  ra_name: Sega NAOMI
+  scrape_as: Arcade
+  hash_method: arcade
+  library_include:
+  - naomi
+  extensions:
+  - .zip
+  - .chd
+  emulators:
+  - Flycast
+- folder: naomi2
+  ra_console_id: 27
+  ra_name: Sega NAOMI 2
+  scrape_as: Arcade
+  hash_method: arcade
+  library_include:
+  - naomi2
+  extensions:
+  - .zip
+  - .chd
+  emulators:
+  - Flycast
+- folder: atomiswave
+  ra_console_id: 27
+  ra_name: Sammy Atomiswave
+  scrape_as: Arcade
+  hash_method: arcade
+  library_include:
+  - atomiswave
+  extensions:
+  - .zip
+  emulators:
+  - Flycast

@@ -1,0 +1,14 @@
+.git
+.gitignore
+venv/
+.venv/
+__pycache__/
+*.pyc
+data/
+logs/
+dats/lost-level-archive/
+config/endpoints.yaml
+backend/.env
+.env
+*.bak
+*.bak-*

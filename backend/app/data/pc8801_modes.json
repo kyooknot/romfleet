@@ -1,0 +1,32 @@
+{
+  "_comment": "PC-8801 (RA console 47 / LaunchBox platform 'NEC PC-8801') per-game N88-BASIC MACHINE-MODE map for the RAQUASI88 standalone emulator. The PC-8801mkII SR (early 1985) introduced the V1S/V1H/V2 modes; pre-SR (<=1984) software is V1, 1985+ SR-era software is V2. A V1 game run in V2 silently mis-renders (wrong colours / speed) with no error, whereas a V2 game run in V1 shows a visible 'V2 mode required' message -- so overriding OLD titles to V1H is the low-risk direction. Community guidance (libretro QUASI88 docs) recommends V1H as the general V1 mode; V1S is only for the rare title that runs too fast in V1H (none identified in this set).",
+  "_usage": "render_launchbox emits each <Game>'s <CommandLine>. A per-game <CommandLine> in Data\\Platforms\\'NEC PC-8801.xml' OVERRIDES (replaces, does NOT append to) the EmulatorPlatform default CommandLine in Data\\Emulators.xml -- so the fullscreen flags must be repeated in every override. For a game whose ra_game_id is in 'overrides', set <CommandLine> = overrides[id].args. For every other PC-8801 game leave <CommandLine> EMPTY so it inherits the platform default ('default_args'). Match preferably by games.ra_game_id (render has this from the DB); the 'rom' field (zip basename, no extension) is provided as a fallback match key for tooling that works off the deployed LaunchBox XML, where <RetroAchievementsId> is often absent.",
+  "platform": "NEC PC-8801",
+  "emulator": "RAQUASI88",
+  "default_mode": "V2",
+  "default_args": "-v2 -fullscreen -english -f10 FULLSCREEN",
+  "base_flags": "-fullscreen -english -f10 FULLSCREEN",
+  "note_sound_board": "Sound Board II (OPNA/YM2608) is enabled GLOBALLY via '-sd2' in the emulator's QUASI88.ini (Emulators\\RAQUASI88\\QUASI88.ini), NOT per-game and NOT in the command line -- it applies to every launch regardless of the per-game CommandLine. Do not add -sd2 to args here.",
+  "overrides": {
+    "14152": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Dragon Slayer (Level 2.0)", "rom": "Dragon Slayer (Level 2.0) {V1 mode} (Clean Save Data) (Euclide) (1.0)", "reason": "filename {V1 mode}; Nihon Falcom 1984 pre-SR"},
+    "13705": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Dragon Slayer (Level 1.1)", "rom": "Dragon Slayer (Level 1.1) (Japan) (NeoKobe)", "reason": "Nihon Falcom 1984 pre-SR (sibling of Level 2.0)"},
+    "33474": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Flappy", "rom": "Flappy [Set 1] {V1 mode} (NeoKobe)", "reason": "filename {V1 mode}; dB-SOFT 1983 pre-SR"},
+    "13979": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Horror House", "rom": "Horror House {V1 mode, MON R, press S} (Japan) (En) (v1.1) (Umbrella Terms)", "reason": "filename {V1 mode}; Nihon Falcom pre-SR"},
+    "13684": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Hydlide", "rom": "Hydlide (Japan) (NeoKobe)", "reason": "T&E Soft 1984 pre-SR"},
+    "30902": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Dig Dug", "rom": "Dig Dug (Japan) (NeoKobe)", "reason": "Dempa 1983 pre-SR"},
+    "14196": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Galaxian", "rom": "Galaxian (Japan) (NeoKobe)", "reason": "Dempa 1983 pre-SR"},
+    "17772": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Pac-Man", "rom": "Pac-Man (Japan) (NeoKobe)", "reason": "Dempa 1983 pre-SR"},
+    "13777": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Punch Ball Mario Bros.", "rom": "Punch Ball Mario Bros. (Japan) (NeoKobe)", "reason": "Hudson Soft 1984 pre-SR"},
+    "13753": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Mario Bros. Special", "rom": "Mario Bros. Special (Japan) (NeoKobe)", "reason": "Hudson Soft 1984 pre-SR"},
+    "6812": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Donkey Kong 3: Dai Gyakushu", "rom": "Donkey Kong 3 Dai Gyakushuu (Japan) (En) (5.25 inch)", "rom_alt": "Donkey Kong 3 - The Great Counterattack (Japan) (NeoKobe)", "reason": "Hudson Soft 1984 pre-SR (both DK3 dumps are V1)"},
+    "34876": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Donkey Gorilla", "rom": "Donkey Gorilla (Japan) (NeoKobe)", "reason": "Tsukumo Denki ~1983 DK clone pre-SR"},
+    "25323": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Thunder Force", "rom": "Thunder Force (Japan) (NeoKobe)", "reason": "Technosoft 1984 pre-SR"},
+    "31162": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Choplifter", "rom": "Choplifter (Japan) (NeoKobe)", "reason": "1984 pre-SR"},
+    "6752": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Computer the Golf", "rom": "Computer the Golf (Japan) (En) (v1.0) (Geofront)", "reason": "Nihon Falcom 1983 pre-SR"},
+    "13743": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Joshi Daisei Private", "rom": "Joshidaisei Private (Private Stripper) (Japan) (NeoKobe)", "reason": "Nihon Falcom 1983 pre-SR"},
+    "14928": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Choro Q Holiday Puzzle", "rom": "Choro Q Holiday Puzzle (Japan) (NeoKobe)", "reason": "Kogado Studio 1984 pre-SR"},
+    "14405": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Soukoban", "rom": "Soukoban (Japan) (NeoKobe)", "reason": "Thinking Rabbit ~1982-83 pre-SR"},
+    "6977": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Rogue", "rom": "Rogue (Japan) (NeoKobe)", "reason": "RA release_date 1980 (<=1984 rule); PC-88 port may be 1985 -- if it shows a 'V2 required' message, flip to V2"},
+    "14121": {"args": "-v1h -fullscreen -english -f10 FULLSCREEN", "mode": "V1H", "title": "Marine Alien", "rom": "Marine Alien (Japan) (lostlevel)", "reason": "RA release_date 1980; primitive early PC-8801 title, clearly pre-SR"}
+  }
+}

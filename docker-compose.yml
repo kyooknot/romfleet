@@ -1,0 +1,88 @@
+# RomFleet — full stack. See docs/DEPLOY.md.
+#
+#   cp .env.example .env       # compose reads ./.env; the app also reads backend/.env
+#   docker compose up -d
+#
+# ⚠️ Elasticsearch needs a host kernel setting BEFORE it will start:
+#      sudo sysctl -w vm.max_map_count=262144
+#      echo 'vm.max_map_count=262144' | sudo tee /etc/sysctl.d/99-romfleet.conf
+#    Without it ES exits immediately with "max virtual memory areas too low".
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: romfleet
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-romfleet}
+      POSTGRES_DB: romfleet
+      # UTF8 is not optional — game titles carry accents, kana and CJK. A SQL_ASCII
+      # database ingests happily and throws UnicodeDecodeError days later.
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U romfleet"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      # ~2 GB heap is the practical floor; below it ES refuses allocations during sync-ra
+      # and the failure looks like a network timeout.
+      ES_JAVA_OPTS: "-Xms2g -Xmx2g"
+    ulimits:
+      memlock: {soft: -1, hard: -1}
+    volumes: [esdata:/usr/share/elasticsearch/data]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes: [redisdata:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  app:
+    build: .
+    depends_on:
+      db: {condition: service_healthy}
+      es: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    environment:
+      DATABASE_URL: postgresql+psycopg2://romfleet:${POSTGRES_PASSWORD:-romfleet}@db:5432/romfleet
+      ES_URL: http://es:9200
+      REDIS_URL: redis://redis:6379/0
+      SRC_ROMS_PATH: /mnt/src/roms
+      CANONICAL_PATH: /mnt/romfleet
+      LBDB_PATH: /var/lib/romfleet/LaunchBox.Metadata.db
+      RA_USERNAME: ${RA_USERNAME:?set RA_USERNAME in .env}
+      RA_API_KEY: ${RA_API_KEY:?set RA_API_KEY in .env}
+      DEFAULT_ENDPOINT: ${DEFAULT_ENDPOINT:-desktop}
+    volumes:
+      # Your existing collection, READ-ONLY. Ingest never writes here; ro makes that real.
+      - ${SRC_ROMS_PATH:?set SRC_ROMS_PATH in .env}:/mnt/src/roms:ro
+      # The library RomFleet builds. Sized like your collection — keep it on a real volume,
+      # never inside the container.
+      - ${CANONICAL_PATH:?set CANONICAL_PATH in .env}:/mnt/romfleet
+      - rfstate:/var/lib/romfleet
+      - ./dats:/app/dats
+    ports: ["8000:8000"]
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  esdata:
+  redisdata:
+  rfstate:

@@ -1,0 +1,78 @@
+# Secrets — never commit
+.env
+*.env
+!.env.example
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Vendored DATs ARE tracked (Lost Level Archive — the brief wants them in-repo).
+# Only runtime-downloaded packs stay out:
+dats/no-intro/
+dats/downloads/
+*.sqlite
+*.db
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+
+# --- added 2026-08-27 while reconciling with the live CT100 deployment ---
+# Everything below was found loose in /opt/romfleet and must never be committed.
+
+# Secrets. deploy/endpoints/*/ holds per-endpoint SSH keys used to push to
+# fleet machines — a private key in a public repo is the worst possible leak.
+.env
+*.env
+!.env.example
+deploy/endpoints/**/id_*
+!deploy/endpoints/**/*.pub.example
+*.pem
+*.key
+
+# Working backups. The live box carries ~30 of these (sourcing.py.bak-gh,
+# hashers/__init__.py.bak-cue, …). Git is the version history; these are not.
+*.bak
+*.bak-*
+*.bak[0-9]
+
+# Ad-hoc scratch scripts and their logs (_deploy.sh, _disc2.log, _miss.py …).
+_*.sh
+_*.log
+_*.py
+*.log
+
+# Runtime state that lives beside the app on the deployed box.
+venv/
+data/
+logs/
+__pycache__/
+*.pyc
+
+# Third-party DAT sets are NOT vendored. Lost Level Archive declares no licence
+# (github.com/televandalist/lost-level-archive), so redistributing it here is not
+# granted — and app/services/lla_fetch.py already pulls the current set weekly.
+dats/lost-level-archive/
+
+# Real endpoint config: hostnames + a path to a private key. Ship the .example.
+config/endpoints.yaml
+
+# secrets / local deployment config
+**/id_ed25519
+**/id_rsa
+*_key
+!*.yaml.example

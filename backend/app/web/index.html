@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RomFleet</title>
+<link rel="icon" type="image/svg+xml" href="/static/romfleet-favicon.svg">
+<style>
+  :root { --bg:#0e1116; --panel:#161b22; --line:#2a313c; --fg:#e6edf3; --mut:#8b949e;
+          --ok:#2ea043; --miss:#d29922; --err:#f85149; --accent:#58a6ff; --man:#a371f7; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.5 -apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--fg); }
+  header { padding:16px 22px; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:14px; }
+  header h1 { margin:0; font-size:18px; } header .tag { color:var(--mut); font-size:12px; }
+  #stats { margin-left:auto; display:flex; gap:18px; } #stats b { color:var(--accent); }
+  #stats .warn b { color:var(--miss); }
+  .wrap { display:grid; grid-template-columns:280px 1fr; height:calc(100vh - 58px); }
+  aside { border-right:1px solid var(--line); overflow:auto; }
+  .sys { padding:11px 18px; border-bottom:1px solid var(--line); cursor:pointer; }
+  .sys:hover,.sys.active { background:var(--panel); } .sys.active { border-left:3px solid var(--accent); }
+  .sys .name { font-weight:600; display:flex; align-items:center; gap:8px; } .sys .meta { color:var(--mut); font-size:12px; margin-top:2px; }
+  .consoleart { height:26px; width:34px; object-fit:contain; flex:none; }
+  .navhome { padding:11px 18px; border-bottom:1px solid var(--line); cursor:pointer; }
+  .navhome:hover,.navhome.active { background:var(--panel); } .navhome.active { border-left:3px solid var(--accent); }
+  .navhome .name { font-weight:600; }
+  .home { padding:22px; max-width:1100px; }
+  .home.wide { max-width:none; }
+  .overallcov { display:flex; align-items:center; gap:18px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px 24px; }
+  .overallcov .bignum { font-size:52px; font-weight:800; color:var(--accent); line-height:1; } .overallcov .bignum span { font-size:26px; }
+  .overallcov .ovlabel { font-size:16px; font-weight:600; } .overallcov .ovsub { color:var(--mut); font-size:13px; margin-top:3px; }
+  .homeh { margin:26px 0 12px; font-size:14px; color:var(--mut); text-transform:uppercase; letter-spacing:.5px; }
+  .donechip { margin-left:10px; padding:2px 9px; border-radius:20px; background:rgba(64,192,120,.14); color:#4fc47a; font-size:11px; font-weight:600; letter-spacing:.3px; text-transform:none; vertical-align:middle; }
+  .allgreen { padding:18px; border:1px solid var(--line); border-radius:10px; background:rgba(64,192,120,.06); color:var(--mut); }
+  .mtblwrap { overflow-x:auto; border:1px solid var(--line); border-radius:10px; }
+  .mtbl { border-collapse:collapse; width:100%; font-size:12.5px; white-space:nowrap; }
+  .mtbl th, .mtbl td { padding:8px 12px; text-align:right; border-bottom:1px solid var(--line); }
+  .mtbl th { color:var(--mut); font-weight:600; text-transform:uppercase; font-size:10.5px; letter-spacing:.4px; position:sticky; top:0; background:var(--panel); }
+  .mtbl th.lft, .mtbl td.lft { text-align:left; }
+  .mtbl td.lft { font-weight:600; }
+  .mtbl td.lft .consoleart { width:18px; height:18px; vertical-align:middle; margin-right:7px; }
+  .mtbl tbody tr { cursor:pointer; }
+  .mtbl th.srt { cursor:pointer; user-select:none; white-space:nowrap; }
+  .mtbl th.srt:hover { color:var(--fg); }
+  .mtbl tbody tr:hover td { background:rgba(120,150,255,.07); }
+  .mtbl td.gap { color:#e8705a; font-weight:700; }
+  .mtbl td.ok0 { color:var(--mut); }
+  .mtbl td.mc.mf { color:#4fc47a; }
+  .mtbl td.mc.mp { color:#e0a94a; }
+  .mtbl td.mc.m0 { color:#e8705a; }
+  .mtbl td.mc.dim { color:var(--line); }
+  .mtbl tr.mtot td { border-top:2px solid var(--line); border-bottom:none; font-weight:700; background:rgba(255,255,255,.02); }
+  .mlegend { margin-left:12px; font-size:11px; text-transform:none; letter-spacing:0; color:var(--mut); font-weight:400; }
+  .mlegend .sw { display:inline-block; width:9px; height:9px; border-radius:2px; margin:0 3px 0 8px; vertical-align:middle; }
+  .mlegend .sw.m0{background:#e8705a} .mlegend .sw.mp{background:#e0a94a} .mlegend .sw.mf{background:#4fc47a}
+  .mhint { color:var(--mut); font-size:11.5px; margin-top:10px; }
+  .mtbl td.gapmid { color:#e0a94a; font-weight:700; }
+  .mtbl td.clik { cursor:pointer; }
+  .mtbl .raw { font-size:10px; color:var(--mut); font-weight:400; margin-left:4px; }
+  .mfbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:2px 0 12px; font-size:12px; }
+  .mfbar select { background:var(--panel); border:1px solid var(--line); color:var(--fg); padding:5px 9px; border-radius:6px; font-size:12px; }
+  .mfbar .mchk { display:flex; align-items:center; gap:6px; color:var(--fg); cursor:pointer; user-select:none; }
+  .mfbar .mfnote { color:var(--mut); margin-left:auto; }
+  .covgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; }
+  .covcard { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; cursor:pointer; transition:border-color .12s, transform .12s; }
+  .covcard:hover { border-color:var(--accent); transform:translateY(-1px); }
+  .covhead { display:flex; align-items:center; gap:8px; font-weight:600; font-size:14px; margin-bottom:10px; }
+  .covbar { height:8px; border-radius:5px; background:var(--bg); overflow:hidden; }
+  .covfill { height:100%; background:linear-gradient(90deg,var(--ok),var(--accent)); border-radius:5px; }
+  .covmeta { color:var(--mut); font-size:12px; margin-top:7px; }
+  .feed { display:flex; flex-direction:column; gap:2px; }
+  .ev { display:flex; align-items:center; gap:12px; padding:11px 14px; border-bottom:1px solid var(--line); }
+  .ev:hover { background:var(--panel); }
+  .evicon { font-size:18px; flex:none; width:24px; text-align:center; }
+  .evart { flex:none; width:34px; height:34px; border-radius:6px; object-fit:cover; background:var(--line); }
+  .evconsole { flex:none; width:34px; height:26px; object-fit:contain; }
+  .evbody { flex:1; min-width:0; } .evtitle { font-size:13.5px; } .evdetail { color:var(--mut); font-size:11.5px; margin-top:1px; }
+  .evsys { display:inline-flex; align-items:center; gap:4px; margin-top:3px; font-size:10.5px; color:var(--mut); background:var(--line); padding:1px 6px 1px 3px; border-radius:9px; }
+  .evsys img { width:18px; height:14px; object-fit:contain; }
+  .evtime { color:var(--mut); font-size:11.5px; white-space:nowrap; }
+  .pill { display:inline-block; padding:1px 7px; border-radius:10px; font-size:11px; }
+  .pill.ok { background:rgba(46,160,67,.15); color:var(--ok); } .pill.miss { background:rgba(210,153,34,.15); color:var(--miss); }
+  main { overflow:auto; }
+  .toolbar { position:sticky; top:0; background:var(--bg); padding:14px 22px; border-bottom:1px solid var(--line);
+             display:flex; gap:10px; align-items:center; z-index:5; flex-wrap:wrap; }
+  .toolbar input,.toolbar select { background:var(--panel); border:1px solid var(--line); color:var(--fg);
+             padding:6px 10px; border-radius:6px; } .toolbar .count { color:var(--mut); margin-left:auto; }
+  .subbar { display:flex; gap:9px; align-items:center; padding:9px 22px; border-bottom:1px solid var(--line);
+            background:var(--panel); flex-wrap:wrap; font-size:13px; }
+  .subbar select { background:var(--bg); border:1px solid var(--line); color:var(--fg); padding:5px 9px; border-radius:6px; }
+  .subbar .cfglbl { color:var(--mut); font-size:12px; }
+  .subbar .cfghint { color:var(--mut); font-size:11.5px; margin-left:auto; max-width:340px; text-align:right; }
+  .gatetag { display:inline-block; margin-left:4px; padding:0 6px; border-radius:9px; font-size:10px;
+             background:rgba(88,166,255,.14); color:var(--accent); text-transform:uppercase; letter-spacing:.3px; }
+  table { width:100%; border-collapse:collapse; }
+  th,td { text-align:left; padding:8px 22px; border-bottom:1px solid var(--line); vertical-align:middle; }
+  th { color:var(--mut); font-size:12px; position:sticky; top:52px; background:var(--bg); }
+  tr.row { cursor:pointer; } tr.row:hover td { background:var(--panel); }
+  td.game { font-weight:600; } td.game .unm { color:var(--miss); font-weight:400; }
+  td.file { font-family:ui-monospace,Menlo,monospace; font-size:12px; color:var(--mut); }
+  .badge { display:inline-block; padding:1px 6px; border-radius:4px; font-size:10.5px; font-weight:700; letter-spacing:.4px; margin-right:4px; }
+  .badge.ra { background:rgba(88,166,255,.18); color:var(--accent); }
+  .badge.lla { background:rgba(163,113,247,.18); color:var(--man); }
+  .badge.nointro,.badge.redump,.badge.mame { background:rgba(46,160,67,.15); color:var(--ok); }
+  .cat { background:rgba(163,113,247,.16); color:var(--man); padding:1px 7px; border-radius:9px; font-size:10.5px; font-weight:600; margin-left:7px; }
+  /* per-type badge colors (override the default purple .cat) */
+  .cat-rel   { background:rgba(63,185,80,.15);  color:#3fb950; }   /* Released    green */
+  .cat-hb    { background:rgba(56,189,248,.16); color:#56c9f8; }   /* Homebrew    cyan */
+  .cat-unl   { background:rgba(240,136,62,.16); color:#f0883e; }   /* Unlicensed  orange */
+  .cat-hack  { background:rgba(219,109,222,.17);color:#e072e3; }   /* Hack        magenta */
+  .cat-proto { background:rgba(245,210,71,.15); color:#f5d247; }   /* Prototype   yellow */
+  .cat-demo  { background:rgba(121,139,248,.17);color:#8ea0ff; }   /* Demo        indigo */
+  .cat-test  { background:rgba(139,148,158,.18);color:#adb6c0; }   /* Test Kit    gray */
+  .cat-sub   { background:rgba(163,113,247,.16); color:#a371f7; }  /* Subset      purple */
+  .cat-bonus { background:rgba(247,196,113,.16); color:#f7c471; }  /* Bonus       gold */
+  .cat-multi { background:rgba(120,200,180,.16); color:#66d0b4; }  /* Multi/Disc  teal */
+  .cat-manual{ background:rgba(139,148,158,.18); color:#adb6c0; }  /* manual      gray */
+  .ralogo { height:18px; width:18px; vertical-align:middle; margin-right:4px; border-radius:3px; }
+  .wordlogo { height:15px; width:auto; vertical-align:middle; margin-right:4px; }
+  .brandmark { height:1.15em; width:auto; vertical-align:-0.22em; margin-right:8px; }
+  .cov { font-size:12px; display:inline-flex; align-items:center; gap:6px; }
+  .dot { width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .dot.full { background:var(--ok); } .dot.part { background:var(--miss); } .dot.none { background:var(--err); }
+  .empty { padding:60px; text-align:center; color:var(--mut); }
+  #overlay,#settings-ov { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; z-index:20; }
+  #settings { position:fixed; top:0; right:0; height:100vh; width:min(640px,95vw); background:var(--bg);
+    border-left:1px solid var(--line); overflow:auto; z-index:21; display:none; }
+  #settings .mh { padding:16px 22px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; position:sticky; top:0; background:var(--bg); }
+  #settings .mh h2 { margin:0; font-size:17px; flex:1; }
+  .srow { display:flex; justify-content:space-between; align-items:center; padding:7px 12px; border:1px solid var(--line); border-radius:6px; margin-bottom:5px; }
+  .srow b { color:var(--mut); margin-right:8px; }
+  .prow { font-family:ui-monospace,Menlo,monospace; font-size:11.5px; padding:4px 8px; border-bottom:1px solid var(--line); }
+  .prow .sc { color:var(--accent); display:inline-block; width:70px; } .prow.ex .sc { color:var(--miss); }
+  #settings .tabs { display:flex; gap:6px; padding:12px 22px 0; border-bottom:1px solid var(--line); }
+  #settings .body { padding-top:26px; }
+  .tab { background:transparent; border:0; border-bottom:2px solid transparent; color:var(--mut); padding:8px 12px; cursor:pointer; font-size:13px; }
+  .tab.active { color:var(--fg); border-bottom-color:var(--accent); }
+  .reqgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:4px 14px; }
+  .reqgrid label { display:flex; align-items:center; gap:7px; font-size:13px; text-transform:capitalize; cursor:pointer; }
+  #modal { position:fixed; top:0; right:0; height:100vh; width:min(760px,95vw); background:var(--bg);
+           border-left:1px solid var(--line); overflow:auto; z-index:21; display:none; }
+  .gsub { display:flex; align-items:center; gap:10px; margin:0 0 16px; flex-wrap:wrap; }
+  .gsub .sysc { cursor:pointer; font-size:12.5px; }
+  .gsub .sysc:hover { background:var(--line); }
+  .ralink { display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:#f5d247;
+            text-decoration:none; border:1px solid #6b5a1f; background:#2a2410; padding:4px 10px; border-radius:6px; }
+  .ralink:hover { background:#3a3216; }
+  .ralink .ralogo { width:15px; height:15px; border-radius:2px; }
+  #modal .mh { padding:16px 22px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; position:sticky; top:0; background:var(--bg); }
+  #modal .mh h2 { margin:0; font-size:17px; flex:1; }
+  #modal .body { padding:18px 22px 60px; }
+  #org-ov { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; z-index:20; }
+  #organize { position:fixed; top:0; right:0; height:100vh; width:min(880px,96vw); background:var(--bg);
+              border-left:1px solid var(--line); z-index:21; display:none; overflow:auto; box-shadow:-8px 0 30px rgba(0,0,0,.4); }
+  #organize .mh { padding:16px 22px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; position:sticky; top:0; background:var(--bg); z-index:2; }
+  #organize .mh h2 { margin:0; font-size:17px; flex:1; }
+  #organize .body { padding:18px 22px 60px; }
+  .orgsum { display:flex; gap:8px; align-items:center; margin-bottom:6px; flex-wrap:wrap; }
+  .orgnote { color:var(--mut); font-size:12.5px; line-height:1.55; margin:6px 0 14px; }
+  .orgnote code { background:var(--panel); padding:1px 5px; border-radius:4px; }
+  .orgtable { max-height:50vh; overflow:auto; border:1px solid var(--line); border-radius:8px; }
+  .orgtable table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  .orgtable th { text-align:left; padding:7px 10px; position:sticky; top:0; background:var(--panel); border-bottom:1px solid var(--line); }
+  .orgtable td { padding:5px 10px; border-bottom:1px solid var(--line); vertical-align:top; word-break:break-all; }
+  .orgtable td:first-child { text-transform:uppercase; font-size:10px; font-weight:700; letter-spacing:.4px; white-space:nowrap; }
+  .orgtable tr.op-rename td:first-child { color:var(--accent); }
+  .orgtable tr.op-quarantine td:first-child { color:var(--miss); }
+  .orgtable .rsn { color:var(--mut); white-space:nowrap; }
+  .orgactions { display:flex; gap:8px; align-items:center; margin-top:14px; flex-wrap:wrap; }
+  .orgpurge { display:flex; gap:8px; align-items:center; margin-top:12px; padding-top:12px; border-top:1px solid var(--line); flex-wrap:wrap; }
+  .btn.danger { background:#b0322f; border-color:#b0322f; color:#fff; }
+  .btn.danger:hover { background:#c93b37; }
+  #miss-ov { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; z-index:20; }
+  #missing { position:fixed; top:0; right:0; height:100vh; width:min(820px,96vw); background:var(--bg);
+             border-left:1px solid var(--line); z-index:21; display:none; overflow:auto; box-shadow:-8px 0 30px rgba(0,0,0,.4); }
+  #missing .mh { padding:16px 22px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; position:sticky; top:0; background:var(--bg); z-index:2; }
+  #missing .mh h2 { margin:0; font-size:17px; flex:1; }
+  #missing .body { padding:18px 22px 60px; }
+  #deploy-ov { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; z-index:20; }
+  #deploysel { position:fixed; top:0; right:0; height:100vh; width:min(560px,96vw); background:var(--bg);
+               border-left:1px solid var(--line); z-index:21; display:none; overflow:auto; box-shadow:-8px 0 30px rgba(0,0,0,.4); }
+  #deploysel .mh { padding:16px 22px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:10px; position:sticky; top:0; background:var(--bg); z-index:2; }
+  #deploysel .mh h2 { margin:0; font-size:17px; flex:1; }
+  #deploysel .body { padding:14px 22px 90px; }
+  .dpbar { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .dpbar .dim { margin-left:auto; }
+  .dprow { display:flex; align-items:center; gap:10px; padding:7px 8px; border-radius:6px; cursor:pointer; }
+  .dprow:hover { background:var(--line); }
+  .dprow input { width:16px; height:16px; flex:none; cursor:pointer; }
+  .dprow .nm { flex:1; display:flex; align-items:center; gap:7px; }
+  .dprow.deployed { opacity:.72; }
+  .dpfoot { position:fixed; bottom:0; right:0; width:min(560px,96vw); padding:12px 22px; background:var(--bg);
+            border-top:1px solid var(--line); border-left:1px solid var(--line); z-index:22; display:flex; gap:10px; align-items:center; }
+  .misstable { width:100%; border-collapse:collapse; font-size:12.5px; }
+  .misstable th { text-align:left; padding:6px 10px; position:sticky; top:0; background:var(--panel); border-bottom:1px solid var(--line); color:var(--mut); font-size:11px; }
+  .misstable td { padding:6px 10px; border-bottom:1px solid var(--line); }
+  .misstable .ach { text-align:right; color:var(--mut); white-space:nowrap; }
+  .gates { display:inline-flex; gap:4px; flex-wrap:wrap; }
+  .gchk { display:inline-flex; align-items:center; gap:4px; font-size:12px; background:var(--bg);
+          border:1px solid var(--line); padding:3px 9px; border-radius:14px; cursor:pointer; }
+  .gchk.off { opacity:.4; cursor:not-allowed; }
+  .gchk input { margin:0; }
+  .dattab { width:100%; border-collapse:collapse; font-size:13px; }
+  .dattab th { text-align:left; padding:6px 10px; color:var(--mut); border-bottom:1px solid var(--line); font-weight:600; font-size:11.5px; }
+  .dattab td { padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .dattab select { background:var(--bg); border:1px solid var(--line); color:var(--fg); padding:4px 8px; border-radius:6px; }
+  .sect { margin:0 0 22px; } .sect h3 { font-size:12px; color:var(--mut); text-transform:uppercase; letter-spacing:.6px; margin:0 0 10px; }
+  .auditbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .chip { font-size:11px; padding:2px 8px; border-radius:10px; border:1px solid var(--line); }
+  .chip.ok { border-color:var(--ok); color:var(--ok); } .chip.bad { border-color:var(--miss); color:var(--miss); }
+  #busy { color:var(--accent); font-size:12px; max-width:420px; } #busy.on::before { content:"⏳ "; }
+  #busy.toast { color:var(--ok); } #busy.toast.bad { color:var(--miss); }
+  #lbdbresults { margin-top:6px; } .lbrow { padding:4px 8px; border:1px solid var(--line); border-radius:5px;
+    margin-bottom:4px; cursor:pointer; font-size:12.5px; } .lbrow:hover { border-color:var(--accent); background:var(--panel); }
+  .grid { display:grid; grid-template-columns:120px 1fr; gap:8px 14px; align-items:center; }
+  .grid label { color:var(--mut); font-size:13px; }
+  .grid input,.grid textarea { width:100%; background:var(--panel); border:1px solid var(--line); color:var(--fg); padding:6px 9px; border-radius:6px; font:inherit; }
+  .grid textarea { min-height:70px; resize:vertical; }
+  .lock { color:var(--man); font-size:11px; margin-left:6px; cursor:pointer; text-decoration:underline dotted; }
+  .favstar { cursor:pointer; font-size:20px; line-height:1; margin-right:8px; color:var(--line); vertical-align:middle; user-select:none; }
+  .favstar.on { color:#f5c518; }
+  .ratingw { margin-left:12px; font-size:15px; vertical-align:middle; white-space:nowrap; }
+  .rstar { cursor:pointer; color:var(--line); user-select:none; }
+  .rstar.on { color:#f5c518; } .rstar.on.comm { color:#8a7d3a; }
+  .rhint { font-size:11px; color:var(--muted); margin-left:5px; }
+  .rclear { cursor:pointer; color:var(--miss); font-size:12px; margin-left:5px; }
+  .mtable { width:100%; border-collapse:collapse; font-size:13px; }
+  .mtable th { text-align:left; padding:6px 10px; border-bottom:1px solid var(--line); color:var(--muted); font-weight:600; }
+  .mtable td { padding:5px 10px; border-bottom:1px solid var(--line); }
+  .mtable td.dim { color:var(--muted); } .mtable td.num { text-align:right; color:var(--muted); white-space:nowrap; }
+  .mtable td.file { font-family:ui-monospace,monospace; font-size:12px; word-break:break-all; color:var(--fg,#e6edf3); }
+  .mtable td { color:var(--fg,#e6edf3); }
+  .mtable a:not(.del), .mtable a:not(.del):link, .mtable a:not(.del):visited { color:#79c0ff; text-decoration:none; }
+  .mtable a:not(.del):hover { text-decoration:underline; }
+  .mtable a.del { color:var(--miss,#f85149); cursor:pointer; white-space:nowrap; font-weight:600; }
+  .mtable a.del:hover { text-decoration:underline; }
+  .chip.warn { border-color:#e3b341; color:#e3b341; }
+  tr.anom td { background:rgba(227,179,65,.07); }
+  .anomflag { color:#e3b341; font-weight:700; cursor:help; }
+  td.reason { max-width:360px; font-size:12px; line-height:1.35; }
+  .rwhen { opacity:.6; white-space:nowrap; }
+  .mstatus { display:inline-block; padding:1px 7px; border-radius:9px; font-size:11px; font-weight:700; }
+  .mstatus.sourceable { background:#1e4620; color:#7ee787; }
+  .mstatus.patchable { background:#1c3a4d; color:#79c0ff; }
+  .mstatus.no-patch { background:#4d3a1c; color:#e3b341; }
+  .mstatus.homebrew { background:#3d2c4d; color:#d2a8ff; }
+  .srclink { color:#d2a8ff; font-size:11px; margin-left:8px; text-decoration:none; white-space:nowrap; }
+  .srclink:hover { text-decoration:underline; }
+  .agentcard { border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin-bottom:16px; }
+  .agenthead { font-size:15px; }
+  .deploywrap { position:relative; display:inline-block; }
+  .deploymenu { position:absolute; top:100%; left:0; margin-top:2px; background:var(--panel,#161b22); border:1px solid var(--line); border-radius:6px; min-width:180px; z-index:20; box-shadow:0 4px 14px rgba(0,0,0,.4); }
+  .deploymenu a { display:block; padding:7px 12px; cursor:pointer; color:var(--fg,#e6edf3); text-decoration:none; }
+  .deploymenu a:hover { background:var(--line); }
+  #toast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); background:#1c3a4d; color:#cfe8ff; padding:10px 18px; border-radius:8px; font-size:13px; z-index:9999; opacity:0; transition:opacity .3s; box-shadow:0 4px 16px rgba(0,0,0,.5); }
+  #toast.err { background:#4d1c1c; color:#ffcccc; }
+  .hidew { position:relative; display:inline-block; margin-left:12px; font-size:12px; cursor:pointer; color:var(--muted); user-select:none; vertical-align:middle; }
+  .hidew.on { color:#e3b341; }
+  .btn { background:var(--accent); color:#0b1220; border:0; padding:7px 14px; border-radius:6px; font-weight:600; cursor:pointer; }
+  .btn.x { background:transparent; color:var(--mut); font-size:20px; padding:0 6px; }
+  .btn2 { background:var(--panel); color:var(--fg); border:1px solid var(--line); padding:5px 11px; border-radius:6px; font-size:12px; cursor:pointer; }
+  .btn2:hover { border-color:var(--accent); } .btn2:disabled { opacity:.5; cursor:default; }
+  .srcbtn { display:inline-flex; align-items:center; gap:7px; background:var(--panel); color:var(--fg);
+    border:1px solid var(--line); padding:5px 12px 5px 7px; border-radius:8px; font-size:12px; cursor:pointer; }
+  .srcbtn:hover { border-color:var(--accent); background:#1b2230; } .srcbtn:disabled { opacity:.45; cursor:default; }
+  .srcbtn img { width:18px; height:18px; border-radius:4px; object-fit:contain; background:#fff2; }
+  .srctoolbtn img { width:15px; height:15px; border-radius:3px; vertical-align:middle; margin-right:5px; object-fit:contain; }
+  .media { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:12px; }
+  .mtype { border:1px solid var(--line); border-radius:8px; padding:10px; display:flex; flex-direction:column; }
+  .mtype.missing { border-style:dashed; } .mtype .lab { font-size:11px; color:var(--mut); margin-bottom:8px; text-transform:capitalize; }
+  .asset { position:relative; border:2px solid transparent; border-radius:6px; overflow:hidden; margin-bottom:6px; }
+  .asset.primary { border-color:var(--accent); } .asset.mlock { box-shadow:0 0 0 2px var(--miss) inset; }
+  .asset img,.asset video { width:100%; display:block; background:#000; cursor:zoom-in; }
+  .lk { cursor:pointer; font-size:11px; user-select:none; }
+  .ext { color:var(--accent); font-size:12px; margin-left:8px; text-decoration:none; } .ext:hover { text-decoration:underline; }
+  #lightbox { position:fixed; inset:0; background:rgba(0,0,0,.9); display:none; align-items:center;
+    justify-content:center; z-index:40; cursor:zoom-out; }
+  #lbcontent img,#lbcontent video { max-width:94vw; max-height:94vh; box-shadow:0 0 40px #000; }
+  .asset .ops { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,.72); display:flex; gap:6px; padding:3px 5px; font-size:11px; }
+  .asset .ops a { color:var(--accent); cursor:pointer; } .asset .ops a.del { color:var(--err); margin-left:auto; }
+  .noimg { color:var(--mut); font-size:12px; padding:18px 0; text-align:center; }
+  .uplabel { margin-top:auto; display:block; text-align:center; font-size:12px; padding:5px; border:1px dashed var(--line);
+             border-radius:6px; cursor:pointer; color:var(--accent); } .uplabel:hover { border-color:var(--accent); }
+  .uplabel input { display:none; }
+</style>
+</head>
+<body>
+<header>
+  <h1><img class="brandmark" src="/static/romfleet-mark.svg" alt=""> RomFleet</h1><span class="tag">configurable-gate library</span>
+  <div id="stats"></div>
+  <button class="btn2" style="margin-left:14px" onclick="openSettings()">⚙ Settings</button>
+</header>
+<div class="wrap">
+  <aside id="systems"></aside>
+  <main>
+    <div class="toolbar">
+      <strong id="sysTitle">Select a system</strong>
+      <select id="statusFilter"><option value="">status: all</option><option>matched</option>
+        <option>unmatched</option><option>manual</option><option>error</option></select>
+      <select id="missingFilter"><option value="">content: all</option>
+        <option value="any">incomplete</option><option value="media">missing any media</option>
+        <option value="metadata">missing metadata</option>
+        <optgroup label="missing media type">
+        <option value="boxfront">missing box</option><option value="titlescreen">missing title</option>
+        <option value="screenshot">missing snap</option><option value="logo">missing logo</option>
+        <option value="background">missing bg</option><option value="video">missing video</option>
+        </optgroup></select>
+      <select id="catFilter"><option value="">type: all</option></select>
+      <input id="search" placeholder="filter…" size="16">
+      <button class="btn2 srctoolbtn" onclick="scrapeAll('ra')"><img src="/static/ra.webp">Scrape all</button>
+      <button class="btn2 srctoolbtn" onclick="scrapeAll('lbdb')"><img src="/static/lbdb.png">Scrape all</button>
+      <button class="btn2 srctoolbtn" onclick="scrapeAll('tgdb')"><img src="/static/tgdb.png">Scrape all</button>
+      <button class="btn2 srctoolbtn" onclick="scrapeAll('igdb')"><img src="/static/igdb.png">Scrape all</button>
+      <button class="btn2 srctoolbtn" onclick="scrapeAll('ss')"><img src="/static/ss.png">Scrape all</button>
+      <button class="btn2 srctoolbtn" onclick="scrapeAll('emumovies')"><img src="/static/emu.png">Videos</button>
+      <button class="btn2 srctoolbtn" onclick="scrapeAll('arcadedb')" title="ArcadeDB by motoschifo — arcade systems only"><span style="font-size:14px">🕹️</span>ArcadeDB</button>
+      <button class="btn2" onclick="openMissing()">🎯 Missing</button>
+      <div class="deploywrap"><button class="btn2" onclick="toggleDeploy(event)">🚀 Deploy ▾</button>
+        <div id="deployMenu" class="deploymenu" style="display:none"></div></div>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="subbar" id="sysConfig" style="display:none"></div>
+    <div id="rows"><div class="empty">Pick a system on the left.</div></div>
+  </main>
+</div>
+
+<div id="overlay" onclick="closeModal()"></div>
+<div id="modal"><div class="mh"><h2 id="mTitle"></h2>
+  <span id="busy"></span>
+  <button class="btn" onclick="saveGame()">Save</button>
+  <button class="btn x" onclick="closeModal()">×</button></div>
+  <div class="body" id="mBody"></div>
+</div>
+<div id="lightbox" onclick="closeLightbox()"><div id="lbcontent"></div></div>
+
+<div id="settings-ov" onclick="closeSettings()"></div>
+<div id="settings"><div class="mh"><h2>⚙ Settings</h2>
+  <button class="btn" onclick="saveSettings()">Save</button>
+  <button class="btn x" onclick="closeSettings()">×</button></div>
+  <div class="tabs">
+    <button class="tab active" data-t="scoring" onclick="setTab('scoring')">Priority Scoring</button>
+    <button class="tab" data-t="completeness" onclick="setTab('completeness')">Media Completeness</button>
+    <button class="tab" data-t="sources" onclick="setTab('sources')">Sources &amp; Keys</button>
+    <button class="tab" data-t="dats" onclick="setTab('dats')">DAT Sources</button>
+  </div>
+  <div class="body" id="settings-body"></div>
+</div>
+
+<div id="org-ov" onclick="closeOrganize()"></div>
+<div id="organize"><div class="mh"><h2 id="orgTitle">Organize</h2>
+  <span id="orgBusy" style="color:var(--accent);font-size:12px"></span>
+  <button class="btn x" onclick="closeOrganize()">×</button></div>
+  <div class="body" id="org-body"></div>
+</div>
+
+<div id="miss-ov" onclick="closeMissing()"></div>
+<div id="missing"><div class="mh"><h2 id="missTitle">Missing</h2>
+  <button class="btn x" onclick="closeMissing()">×</button></div>
+  <div class="body" id="miss-body"></div>
+</div>
+
+<div id="deploy-ov" onclick="closeDeployPicker()"></div>
+<div id="deploysel"><div class="mh"><h2 id="dpTitle">Deploy systems</h2>
+  <button class="btn x" onclick="closeDeployPicker()">×</button></div>
+  <div class="body" id="dp-body"></div>
+  <div class="dpfoot"><button class="btn" id="dpGo" onclick="submitDeploy()">🚀 Deploy selected</button>
+    <span class="dim" id="dpcount">0 selected</span></div>
+</div>
+
+<script>
+const MTYPES = ["boxfront","boxback","titlescreen","screenshot","logo","background","marquee","video","cart","disc","manual"];
+const SRC_LOGO={ra:'ra.webp',lbdb:'lbdb.png',tgdb:'tgdb.png',igdb:'igdb.png',ss:'ss.png',emumovies:'emu.png'};
+const SRC_LABEL={ra:'RetroAchievements',lbdb:'LaunchBox',tgdb:'TheGamesDB',igdb:'IGDB',ss:'ScreenScraper',emumovies:'EmuMovies',arcadedb:'ArcadeDB'};
+function srcBtn(src,fn){ return `<button class="srcbtn" data-fb onclick="${fn||`fillFrom('${src}')`}" title="fill from ${SRC_LABEL[src]}"><img src="/static/${SRC_LOGO[src]}"><span>${SRC_LABEL[src]}</span></button>`; }
+const el=(s)=>document.querySelector(s), j=async(u,o)=>(await fetch(u,o)).json();
+let current=null, game=null;
+
+// strip a leading ~Tag~ or trailing (Tag) into {title, cat} for legacy display
+function splitTitle(t){ t=t||'';
+  let m=t.match(/^~([^~]+)~\s*(.+)$/); if(m) return {t:m[2].trim(), cat:m[1].trim()};
+  m=t.match(/^(.*)\s*\((Homebrew|Hack|Unlicensed|Prototype|Demo|Test Kit|Subset|Bonus|Multi)\)\s*$/i);
+  if(m) return {t:m[1].trim(), cat:m[2].trim()}; return {t, cat:null}; }
+// map a category label to its colored badge class
+const _CATCLS={released:'rel',homebrew:'hb',aftermarket:'hb',unlicensed:'unl',unl:'unl',hack:'hack',
+  prototype:'proto',proto:'proto',demo:'demo',testkit:'test',subset:'sub',bonus:'bonus',multi:'multi',manual:'manual'};
+function catCls(c){ if(!c) return 'cat'; const k=(''+c).toLowerCase().replace(/[^a-z0-9]+/g,'');
+  return 'cat cat-'+(_CATCLS[k]||'sub'); }
+function catBadge(c){ return c?`<span class="${catCls(c)}">${c}</span>`:''; }
+function idName(src){ const n=(game.source_names||{})[src]; return n?` <span class="chip">→ ${n}</span>`:''; }
+function srcLink(src,id,name){ if(!id && src!=='lbdb') return '';
+  const u={ tgdb:`https://thegamesdb.net/game.php?id=${id}`, ra:`https://retroachievements.org/game/${id}`,
+    ss:`https://www.screenscraper.fr/gameinfos.php?gameid=${id}`, igdb:`https://www.igdb.com/search?type=1&q=${encodeURIComponent(name||'')}`,
+    lbdb:`https://gamesdb.launchbox-app.com/games/results?searchType=title&searchValue=${encodeURIComponent(name||'')}` }[src];
+  return u?` <a href="${u}" target="_blank" class="ext">↗ view</a>`:''; }
+const MATCH_LOGO={ra:'ra.webp','no-intro':'nointro.svg'};   // square icons
+const MATCH_WORD={lla:'lla.png'};                            // wide wordmark logos
+const MATCH_TITLE={ra:'RetroAchievements','no-intro':'No-Intro',lla:'Lost Level Archive',redump:'Redump',mame:'MAME'};
+function badges(dbs){ return (dbs||[]).map(d=>{
+    const t=MATCH_TITLE[d]||d;
+    if(MATCH_WORD[d]) return `<img class="wordlogo" src="/static/${MATCH_WORD[d]}" title="${t} match" alt="${d}">`;
+    if(MATCH_LOGO[d]) return `<img class="ralogo" src="/static/${MATCH_LOGO[d]}" title="${t} match" alt="${d}">`;
+    return `<span class="badge ${d.replace('-','')}" title="${t} match">${d.toUpperCase()}</span>`;
+  }).join(''); }
+function covCell(c){ if(!c) return '<span class="cov"><span class="dot none"></span>—</span>';
+  const cls=c.complete?'full':(c.core_have>0?'part':'none');
+  return `<span class="cov"><span class="dot ${cls}"></span>${c.core_have}/${c.core_total}${c.metadata_missing.length?' · meta':''}</span>`; }
+function busy(on,msg){ el('#busy').className=on?'on':''; el('#busy').textContent=on?(msg||'working…'):''; }
+function toast(msg,ms=4500,bad=false){ const b=el('#busy'); b.className='toast'+(bad?' bad':''); b.textContent=msg;
+  clearTimeout(window._tt); window._tt=setTimeout(()=>{ b.className=''; b.textContent=''; },ms); }
+function scrapeNote(src,res){
+  const S=src.toUpperCase();
+  if(res.error) return {msg:`${S}: ${res.error}`, bad:true};
+  if(src==='emumovies'){
+    if(res.video==='downloaded') return {msg:'EmuMovies: video downloaded ✓'};
+    if(res.video==='exists') return {msg:'EmuMovies: already had a video'};
+    return {msg:'EmuMovies: no matching video — try the “EmuMovies title” override below (it’s an exact-title match)', bad:true};
+  }
+  if(res.matched===false) return {msg:`${S}: no match found — try an id/search override below`, bad:true};
+  const parts=[]; if((res.filled||[]).length) parts.push('filled '+res.filled.join(', '));
+  if(res.images) parts.push(res.images+' images');
+  return {msg:`${S}: ${parts.join(' · ')||'matched (nothing new to add)'}`};
+}
+
+async function loadStats(){ const s=await j('/api/stats');
+  el('#stats').innerHTML=['systems','games','roms','matched','unmatched'].map(k=>`<span>${k} <b>${s[k]}</b></span>`).join('')+
+    `<span class="warn">incomplete <b>${s.incomplete}</b></span>`; }
+async function loadSystems(){ const sys=await j('/api/systems');
+  el('#systems').innerHTML=`<div class="navhome ${current===null?'active':''}" id="homeItem" onclick="goHome()"><div class="name">🏠 <span>Home</span></div></div>`+
+    `<div class="navhome" id="missItem" onclick="showMissing()"><div class="name">🔍 <span>Missing</span></div></div>`+
+    `<div class="navhome" id="extraItem" onclick="showExtras()"><div class="name">🗑 <span>Extra Files</span></div></div>`+
+    `<div class="navhome" id="agentItem" onclick="showAgents()"><div class="name">🖥 <span>Agents</span></div></div>`+
+    `<div class="navhome" id="metricsItem" onclick="showMetrics()"><div class="name">📊 <span>Metrics</span></div></div>`+
+    `<div class="navhome" id="assetsItem" onclick="showAssets()"><div class="name">💾 <span>BIOS &amp; Saves</span></div></div>`+
+    sys.map(s=>`<div class="sys" data-f="${s.folder}"><div class="name">${s.icon?`<img class="consoleart" src="${s.icon}" alt="" onerror="this.style.display='none'">`:''}<span>${s.name||s.ra_name}</span></div>
+     <div class="meta">${s.folder} · ${s.roms} roms <span class="pill ok">${s.matched} ✓</span>
+     ${s.unmatched?`<span class="pill miss">${s.unmatched} ?</span>`:''}
+     <span class="gatetag" title="membership gate · selection">${s.gates.join('+')}${!(s.gates.length===1&&s.gates[0]==='ra')?' · '+(s.selection==='fullset'?'full':'1g1r'):''}</span></div></div>`).join('');
+  document.querySelectorAll('.sys').forEach(d=>d.onclick=()=>selectSystem(d.dataset.f));
+  if(current && sys.find(s=>s.folder===current)) selectSystem(current);
+  else goHome(); }
+function selectSystem(f){ current=f; document.querySelectorAll('.sys').forEach(d=>d.classList.toggle('active',d.dataset.f===f));
+  document.querySelectorAll('.navhome').forEach(d=>d.classList.remove('active'));
+  el('.toolbar').style.display=''; el('#sysTitle').textContent=f; loadSystemConfig(f); loadCategories(f); loadRoms(); }
+function goHome(){ current=null; document.querySelectorAll('.sys,.navhome').forEach(d=>d.classList.remove('active'));
+  const hi=el('#homeItem'); if(hi) hi.classList.add('active');
+  el('.toolbar').style.display='none'; el('#sysConfig').style.display='none'; renderHome(); }
+function _navPage(id){ current=null; document.querySelectorAll('.sys,.navhome').forEach(d=>d.classList.remove('active'));
+  const e=el('#'+id); if(e) e.classList.add('active');
+  el('.toolbar').style.display='none'; el('#sysConfig').style.display='none'; }
+async function showMissing(){ _navPage('missItem'); el('#rows').innerHTML='<div class="empty">Scanning all systems…</div>';
+  const d=await j('/api/missing'); const c=d.counts||{};
+  const badge=s=>`<span class="mstatus ${s}">${s}</span>`;
+  const legend=['sourceable','patchable','no-patch','homebrew'].filter(k=>c[k]).map(k=>`${badge(k)} <b>${c[k]}</b>`).join(' &nbsp; ');
+  const ago=s=>{ if(!s) return ''; const d0=(Date.now()-new Date(s).getTime())/86400000;
+    return d0<1?'today':(d0<2?'1d ago':Math.floor(d0)+'d ago'); };
+  const rows=d.missing.map(m=>`<tr${m.anomaly?' class="anom"':''}><td>${badge(m.status)}${m.anomaly?' <span class="anomflag" title="This game is classified as obtainable, but a sourcing run already tried and failed — that points at a pipeline defect, not a missing archive.">⚠</span>':''}</td>
+    <td><a href="${m.url}" target="_blank">${m.title}</a>${m.itch?` <a href="${m.itch}" target="_blank" class="srclink" title="find on itch.io, then drop it in the dropoff folder">↗ itch.io</a>`:''}</td>
+    <td class="dim">${m.category||''}</td><td class="dim">${m.system}</td><td class="num">${m.achievements||''}</td>
+    <td class="dim reason" title="${(m.reason||'').replace(/"/g,'&quot;')}">${m.reason||''}${m.attempted_at?` <span class="rwhen">· ${ago(m.attempted_at)}</span>`:''}</td></tr>`).join('');
+  el('#rows').innerHTML=`<div class="home"><h3 class="homeh">Missing games — ${d.total}</h3>
+    <div class="auditbar" style="margin-bottom:12px">${legend||'<span class="chip ok">nothing missing 🎉</span>'}
+      ${d.anomalies?`<span class="chip warn" title="Classified obtainable, but a sourcing run already tried and failed — investigate these first.">⚠ ${d.anomalies} need investigation</span>`:''}
+      <span class="chip" title="sourceable=in No-Intro · patchable=hack/translation w/ RAPatches patch · no-patch=hack, no patch · homebrew=needs drop-off">ⓘ status</span></div>
+    <table class="mtable"><thead><tr><th>Status</th><th>Game</th><th>Type</th><th>System</th><th>Ach</th><th>Why it's still missing</th></tr></thead>
+    <tbody>${rows||'<tr><td colspan="6" class="empty">Nothing missing 🎉</td></tr>'}</tbody></table></div>`; }
+async function showExtras(){ _navPage('extraItem'); el('#rows').innerHTML='<div class="empty">Scanning canonical store…</div>'; renderExtras(); }
+async function renderExtras(){ const d=await j('/api/extras'); window._extras=d.extras; const c=d.counts||{};
+  const rows=d.extras.map((x,i)=>`<tr><td class="dim">${x.reason}</td><td class="file">${x.file}</td><td class="num">${fmtBytes(x.bytes)}</td>
+    <td><a class="del" onclick="delExtra(this,${i})">✕ delete</a></td></tr>`).join('');
+  el('#rows').innerHTML=`<div class="home"><h3 class="homeh">Extra files — ${d.total} · ${fmtBytes(d.bytes)}</h3>
+    <div class="auditbar" style="margin-bottom:12px">${Object.entries(c).map(([k,v])=>`<span class="chip">${k}: ${v}</span>`).join('')||'<span class="chip ok">clean 🎉</span>'}</div>
+    <table class="mtable"><thead><tr><th>Reason</th><th>File</th><th>Size</th><th></th></tr></thead>
+    <tbody>${rows||'<tr><td colspan="4" class="empty">No extra files — clean 🎉</td></tr>'}</tbody></table></div>`; }
+async function delExtra(a,i){ const file=(window._extras[i]||{}).file; if(!file) return;
+  if(!confirm('Delete this file?\n\n'+file)) return; a.textContent='…';
+  const r=await fetch('/api/extras/delete?confirm=true',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({file})});
+  if(r.ok){ const tr=a.closest('tr'); tr.style.opacity=.4; tr.querySelector('td:last-child').textContent='deleted'; } else a.textContent='error'; }
+function fmtBytes(n){ if(n<1024)return n+' B'; if(n<1048576)return (n/1024).toFixed(0)+' K'; if(n<1073741824)return (n/1048576).toFixed(1)+' M'; return (n/1073741824).toFixed(2)+' G'; }
+async function showAgents(){ _navPage('agentItem'); el('#rows').innerHTML='<div class="empty">Loading agents…</div>';
+  const d=await j('/api/agents');
+  const cards=d.agents.map(a=>{
+    const rows=(a.systems||[]).map(s=>`<tr><td>${s.system}</td><td class="num">${s.games}</td>
+      <td>${s.hidden?`<span class="mstatus homebrew">${s.hidden} hidden</span>`:''}</td>
+      <td class="dim">${s.pushed_at?timeago(s.pushed_at):''}</td></tr>`).join('');
+    return `<div class="agentcard"><div class="agenthead">🖥 <b>${a.name}</b>
+        <span class="chip">${a.kind}</span> <span class="dim">${a.host}</span>
+        <a class="btn2" style="float:right" onclick="reconcileAgent('${a.name}',this)" title="re-read what's actually on the agent">↻ re-sync</a>
+        <a class="btn2" style="float:right;margin-right:6px" onclick="refreshAgent('${a.name}',this)" title="re-deploy every system on this agent (latest metadata/media/hidden)">⟳ Refresh all</a>
+        <a class="btn2" style="float:right;margin-right:6px" onclick="openDeployPicker('${a.name}')" title="deploy several systems to this agent at once">➕ Deploy systems</a></div>
+      <div class="ovsub" style="margin:4px 0 10px">${(a.systems||[]).length} systems · ${a.total_games} games${a.total_hidden?` · ${a.total_hidden} hidden`:''}</div>
+      <table class="mtable"><thead><tr><th>System</th><th>Games</th><th></th><th>Deployed</th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="4" class="empty">nothing deployed yet — use Deploy on a system page</td></tr>'}</tbody></table></div>`;
+  }).join('');
+  el('#rows').innerHTML=`<div class="home"><h3 class="homeh">Agents</h3>${cards||'<div class="empty">No agents configured.</div>'}</div>`; }
+async function reconcileAgent(name,a){ if(a)a.textContent='…'; await fetch(`/api/agents/${name}/reconcile`,{method:'POST'}); showAgents(); }
+async function showAssets(){ _navPage('assetsItem'); el('#rows').innerHTML='<div class="empty">Loading BIOS &amp; saves…</div>';
+  const d=await j('/api/assets');
+  if(!d.migrated){ el('#rows').innerHTML='<div class="home"><h3 class="homeh">BIOS &amp; Saves</h3><div class="empty">Not migrated yet — the canonical <code>system/</code> store is empty.</div></div>'; return; }
+  const b=d.bios, s=d.saves;
+  const subgrid=b.subdirs.map(x=>`<span class="chip">${x.name} · ${x.files} · ${x.size}</span>`).join(' ')||'<span class="dim">—</span>';
+  const savegrid=s.by_emulator.map(x=>`<span class="chip">${x.emulator} · ${x.files} files · ${x.size}</span>`).join(' ')||'<span class="dim">none</span>';
+  const agentRows=d.agents.map(a=>`<div class="agentcard"><div class="agenthead">🖥 <b>${a.name}</b> <span class="dim">${a.host}</span>
+      <a class="btn2" style="float:right" onclick="deploySaves('${a.name}',this)" title="deploy save data to this agent">💾 Deploy Saves</a>
+      <a class="btn2" style="float:right;margin-right:6px" onclick="deployBios('${a.name}',this)" title="mirror the whole BIOS tree to this agent's RetroArch system dir">📥 Deploy BIOS</a></div>
+    <div class="ovsub" style="margin-top:6px">BIOS → <code>RetroArch\\system\\</code> · Saves → <code>LaunchBox\\Saves\\</code></div></div>`).join('')||'<div class="empty">No agents configured.</div>';
+  el('#rows').innerHTML=`<div class="home"><h3 class="homeh">BIOS &amp; Saves</h3>
+    <div class="sect"><h3>BIOS / system files</h3>
+      <div class="ovsub">${b.files} files · ${b.size} · ${b.top_bios_count} top-level BIOS · ${b.subdirs.length} emulator dirs</div>
+      <div style="margin:10px 0;line-height:2">${subgrid}</div></div>
+    <div class="sect"><h3>Save data</h3>
+      <div class="ovsub">${s.total_files} files across ${s.by_emulator.length} emulators</div>
+      <div style="margin:10px 0;line-height:2">${savegrid}</div></div>
+    <div class="sect"><h3>Deploy to agents</h3>${agentRows}</div></div>`; }
+async function deployBios(name,a){ if(a)a.textContent='📥 …'; const r=await fetch(`/api/agents/${name}/deploy-bios`,{method:'POST'}); if(a)a.textContent='📥 Deploy BIOS'; toast(r.ok?`Deploying BIOS → ${name} (RetroArch\\system\\) — runs in the background`:'Deploy failed', r.ok?'':'err'); }
+async function deploySaves(name,a){ if(a)a.textContent='💾 …'; const r=await fetch(`/api/agents/${name}/deploy-saves`,{method:'POST'}); if(a)a.textContent='💾 Deploy Saves'; toast(r.ok?`Deploying saves → ${name} — runs in the background`:'Deploy failed', r.ok?'':'err'); }
+const _MLABEL={boxfront:'Box',titlescreen:'Title',screenshot:'Snap',logo:'Logo',background:'BG',video:'Video'};
+function _pct(n,d){ return d?Math.round(100*n/d):0; }
+// gap cell: higher % = worse (green 0%, amber low, red high). Clickable -> filtered games list.
+function _gapcell(n,d,drill,tip){ const p=_pct(n,d);
+  const cls=n===0?'ok0':(p<25?'gapmid':'gap');
+  return `<td class="${cls} clik" onclick="${drill}" title="${tip} — ${n} of ${d} (${p}%). Click to list them.">${n===0?'0%':p+'%'}<span class="raw">(${n})</span></td>`; }
+// media cell: % of games that HAVE the asset (green=all, amber=some, red=none). Clickable -> games MISSING it.
+function _mcell(have,total,drill,tip){ if(!total) return '<td class="mc dim">–</td>';
+  const p=_pct(have,total), cls=have===0?'m0':(have<total?'mp':'mf');
+  return `<td class="mc ${cls} clik" onclick="${drill}" title="${tip}: ${have} of ${total} have it (${p}%). Click to list the ${total-have} missing.">${p}%<span class="raw">(${have})</span></td>`; }
+// drill from a metric cell -> that system's games list, pre-filtered.
+function drillTo(folder,opts,ev){ if(ev) ev.stopPropagation();
+  el('#statusFilter').value=opts.status||''; el('#missingFilter').value=opts.missing||'';
+  el('#catFilter').value=''; el('#search').value=''; selectSystem(folder); }
+let _metrics=null,_mHideDone=false,_mFocus='',_mSort='incomplete',_mSortDir=1;
+function _setSort(k){ if(_mSort===k)_mSortDir=-_mSortDir; else {_mSort=k;_mSortDir=1;} renderMetrics(); }
+async function showMetrics(){ _navPage('metricsItem');
+  el('#rows').innerHTML='<div class="empty">Computing metrics…</div>';
+  _metrics=await j('/api/metrics'); renderMetrics(); }
+function renderMetrics(){ const d=_metrics; if(!d) return;
+  const T=d.media_types, t=d.totals, cols=_mFocus?[_mFocus]:T;
+  const totRoms=d.systems.reduce((a,s)=>a+s.roms,0);
+  const isDone=s=>s.incomplete===0&&s.unmatched===0&&s.missing_meta===0;
+  const mgap=s=>{ let have=0,tot=0; cols.forEach(x=>{have+=s.media[x];tot+=s.games;}); return tot?have/tot:1; };
+  let sys=d.systems.slice();
+  if(_mHideDone) sys=sys.filter(s=>!isDone(s));
+  const _sv=(s,k)=> k==='games'?s.games : k==='unmatched'?_pct(s.unmatched,s.roms) : k==='incomplete'?_pct(s.incomplete,s.games)
+    : k==='meta'?_pct(s.missing_meta,s.games) : k==='media'?(100-Math.round(mgap(s)*100)) : (100-_pct(s.media[k]||0,s.games));
+  sys.sort((a,b)=> _mSort==='name' ? a.name.localeCompare(b.name)*_mSortDir
+    : ((_sv(b,_mSort)-_sv(a,_mSort))||(b.games-a.games))*_mSortDir);
+  const _car=k=>_mSort===k?(_mSortDir>0?' ▾':' ▴'):'';
+  const head=`<tr><th class="lft srt" onclick="_setSort('name')" title="Sort by name">System${_car('name')}</th>`
+    +`<th class="srt" onclick="_setSort('games')" title="Sort by game count">Games${_car('games')}</th>`
+    +`<th class="srt" onclick="_setSort('unmatched')" title="Sort by unmatched">Unmatched${_car('unmatched')}</th>`
+    +`<th class="srt" onclick="_setSort('incomplete')" title="Sort by incomplete">Incomplete${_car('incomplete')}</th>`
+    +`<th class="srt" onclick="_setSort('meta')" title="Sort by missing metadata">No&nbsp;meta${_car('meta')}</th>`
+    +cols.map(x=>`<th class="srt" onclick="_setSort('${x}')" title="${x} coverage — click to sort">${_MLABEL[x]||x}${_car(x)}</th>`).join('')+`</tr>`;
+  const rows=sys.map(s=>`<tr onclick="selectSystem('${s.folder}')" title="Open ${s.name}">
+    <td class="lft">${s.icon?`<img class="consoleart" src="${s.icon}">`:''}${s.name}</td>
+    <td>${s.games}</td>
+    ${_gapcell(s.unmatched,s.roms,`drillTo('${s.folder}',{status:'unmatched'},event)`,'Unmatched ROMs')}
+    ${_gapcell(s.incomplete,s.games,`drillTo('${s.folder}',{missing:'any'},event)`,'Incomplete games')}
+    ${_gapcell(s.missing_meta,s.games,`drillTo('${s.folder}',{missing:'metadata'},event)`,'Games missing metadata')}
+    ${cols.map(x=>_mcell(s.media[x],s.games,`drillTo('${s.folder}',{missing:'${x}'},event)`,_MLABEL[x]||x)).join('')}</tr>`).join('');
+  const foot=`<tr class="mtot"><td class="lft">All systems</td><td>${t.games}</td>
+    <td class="${t.unmatched?'gap':'ok0'}" title="${t.unmatched} of ${totRoms} ROMs">${_pct(t.unmatched,totRoms)}%<span class="raw">(${t.unmatched})</span></td>
+    <td class="${t.incomplete?'gap':'ok0'}" title="${t.incomplete} of ${t.games} games">${_pct(t.incomplete,t.games)}%<span class="raw">(${t.incomplete})</span></td>
+    <td class="${t.missing_meta?'gap':'ok0'}" title="${t.missing_meta} of ${t.games} games">${_pct(t.missing_meta,t.games)}%<span class="raw">(${t.missing_meta})</span></td>
+    ${cols.map(x=>`<td class="mc" title="${t.media[x]} of ${t.games} have it">${_pct(t.media[x],t.games)}%<span class="raw">(${t.media[x]})</span></td>`).join('')}</tr>`;
+  const mtOpts=['',...T].map(x=>`<option value="${x}" ${_mFocus===x?'selected':''}>${x?('focus: '+(_MLABEL[x]||x)):'media: all'}</option>`).join('');
+  const sortOpts=[['incomplete','sort: most incomplete'],['unmatched','sort: most unmatched'],['meta','sort: most missing meta'],['media','sort: worst media coverage'],['name','sort: name A–Z']]
+    .map(o=>`<option value="${o[0]}" ${_mSort===o[0]?'selected':''}>${o[1]}</option>`).join('');
+  const bar=`<div class="mfbar">
+    <label class="mchk"><input type="checkbox" ${_mHideDone?'checked':''} onchange="_mHideDone=this.checked;renderMetrics()"> hide 100%-complete</label>
+    <select onchange="_mFocus=this.value;renderMetrics()">${mtOpts}</select>
+    <select onchange="_mSort=this.value;_mSortDir=1;renderMetrics()">${sortOpts}</select>
+    <span class="mfnote">${sys.length} of ${d.systems.length} systems</span></div>`;
+  el('#rows').innerHTML=`<div class="home wide"><h3 class="homeh">Metrics — coverage &amp; media gaps by system
+    <span class="mlegend"><i class="sw m0"></i>none <i class="sw mp"></i>partial <i class="sw mf"></i>full</span></h3>
+    ${bar}
+    <div class="mtblwrap"><table class="mtbl"><thead>${head}</thead><tbody>${rows}${foot}</tbody></table></div>
+    <p class="mhint">Gap columns (unmatched / incomplete / no-meta) show the shortfall as a % — green 0%, amber low, red high. Media columns show <b>coverage</b> % (green = all games have it). Every cell is clickable and opens that system's games list filtered to exactly those games; the raw count is in parentheses.</p>
+    </div>`; }
+async function refreshAgent(name,a){ if(a)a.textContent='⟳ starting…';
+  const d=await (await fetch(`/api/agents/${name}/refresh`,{method:'POST'})).json();
+  if(a)a.textContent='⟳ Refresh all';
+  toast(d.count?`Refreshing ${d.count} systems on ${name} — runs in the background (media takes a bit)`:'Nothing deployed to refresh'); }
+async function openDeployPicker(name){
+  window._dpAgent=name; el('#dpTitle').textContent='Deploy systems → '+name;
+  el('#dp-body').innerHTML='<div class="empty">Loading systems…</div>';
+  el('#deploy-ov').style.display='block'; el('#deploysel').style.display='block';
+  const [sys,ag]=await Promise.all([j('/api/systems'),j('/api/agents')]);
+  const agent=(ag.agents||[]).find(a=>a.name===name)||{systems:[]};
+  const deployed=new Set((agent.systems||[]).map(s=>s.system));
+  const rows=sys.map(s=>{ const on=deployed.has(s.folder);
+    return `<label class="dprow ${on?'deployed':''}"><input type="checkbox" value="${s.folder}" onchange="updateDpCount()">
+      <span class="nm">${s.icon?`<img class="consoleart" src="${s.icon}">`:''}${s.name}</span>
+      <span class="dim">${s.matched} games${on?' · deployed':''}</span></label>`; }).join('');
+  el('#dp-body').innerHTML=`<div class="dpbar"><a class="btn2" onclick="dpAll(true)">Select all</a>
+      <a class="btn2" onclick="dpAll(false)">Clear</a>
+      <a class="btn2" onclick="dpNew()">Select undeployed</a></div>${rows||'<div class="empty">No systems.</div>'}`;
+  updateDpCount(); }
+function closeDeployPicker(){ el('#deploy-ov').style.display='none'; el('#deploysel').style.display='none'; }
+function dpAll(on){ document.querySelectorAll('#dp-body input[type=checkbox]').forEach(i=>i.checked=on); updateDpCount(); }
+function dpNew(){ document.querySelectorAll('#dp-body .dprow').forEach(r=>{ const i=r.querySelector('input'); if(i)i.checked=!r.classList.contains('deployed'); }); updateDpCount(); }
+function updateDpCount(){ const n=document.querySelectorAll('#dp-body input:checked').length;
+  el('#dpcount').textContent=n+' selected'; const b=el('#dpGo'); if(b)b.disabled=!n; }
+async function submitDeploy(){ const name=window._dpAgent;
+  const sys=[...document.querySelectorAll('#dp-body input:checked')].map(i=>i.value);
+  if(!sys.length){ toast('No systems selected'); return; }
+  closeDeployPicker();
+  const r=await fetch(`/api/agents/${name}/deploy`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systems:sys})});
+  const d=await r.json().catch(()=>({}));
+  toast(r.ok?`Deploying ${d.count||sys.length} systems → ${name} — runs sequentially in the background, watch the Agents page`:'Deploy failed', r.ok?'':'err'); }
+async function toggleDeploy(e){ e.stopPropagation(); const m=el('#deployMenu');
+  if(m.style.display==='block'){ m.style.display='none'; return; }
+  if(!current){ toast('Open a system first'); return; }
+  const d=await j('/api/endpoints'); window._eps=d.endpoints||[];
+  m.innerHTML=window._eps.map((ep,i)=>`<a onclick="deployTo(${i})">${ep.label}</a>`).join('')||'<a class="dim">no agents configured</a>';
+  m.style.display='block'; }
+async function deployTo(i){ el('#deployMenu').style.display='none'; const ep=(window._eps||[])[i]; if(!ep)return;
+  const sys=current;
+  const r=await fetch(`/api/systems/${sys}/push?endpoint=${encodeURIComponent(ep.name)}`,{method:'POST'});
+  toast(r.ok?`Deploying ${sys} → ${ep.label} — watch the Agents page`:'Deploy failed', r.ok?'':'err'); }
+function toast(msg,kind){ let t=el('#toast'); if(!t){ t=document.createElement('div'); t.id='toast'; document.body.appendChild(t); } t.textContent=msg; t.className=(kind==='err'?'err':''); t.style.opacity='1'; clearTimeout(t._h); t._h=setTimeout(function(){t.style.opacity='0';},3800); }
+document.addEventListener('click',function(){ ['deployMenu','hideMenu'].forEach(function(id){ const m=el('#'+id); if(m&&m.style.display==='block') m.style.display='none'; }); });
+function timeago(iso){ const s=(Date.now()-new Date(iso))/1000; if(s<60)return 'just now'; if(s<3600)return Math.floor(s/60)+'m ago'; if(s<86400)return Math.floor(s/3600)+'h ago'; return Math.floor(s/86400)+'d ago'; }
+async function renderHome(){
+  el('#rows').innerHTML='<div class="empty">Loading…</div>';
+  const d=await j('/api/home'); const ov=d.overall||{};
+  const incomplete=d.systems.filter(s=>s.pct<100);
+  const doneN=d.systems.length-incomplete.length;
+  const cards=incomplete.map(s=>`<div class="covcard" onclick="selectSystem('${s.folder}')" title="Open ${s.name}">
+    <div class="covhead">${s.icon?`<img class="consoleart" src="${s.icon}">`:''}<span>${s.name}</span></div>
+    <div class="covbar"><div class="covfill" style="width:${s.pct}%"></div></div>
+    <div class="covmeta">${s.pct}% · ${s.owned}/${s.catalog}</div></div>`).join('');
+  const ic={ra_added:'🎮',rf_added:'📥',sourced:'📥',source_failed:'⚠️',coverage:'📈'};
+  const sysmap={}; d.systems.forEach(s=>sysmap[s.folder]={name:s.name,icon:s.icon});
+  const feed=d.events.map(e=>{
+    const sm=e.system?sysmap[e.system]:null;
+    const thumb=e.image?`<img class="evart" src="${e.image}" loading="lazy">`
+      :(sm&&sm.icon?`<img class="evconsole" src="${sm.icon}">`:`<span class="evicon">${ic[e.kind]||'•'}</span>`);
+    const badge=sm?`<span class="evsys" onclick="event.stopPropagation();selectSystem('${e.system}')" style="cursor:pointer">${sm.icon?`<img src="${sm.icon}">`:''}${sm.name}</span>`:'';
+    return `<div class="ev">${thumb}
+      <div class="evbody"><div class="evtitle">${e.title}</div>${e.detail?`<div class="evdetail">${e.detail}</div>`:''}${badge}</div>
+      <span class="evtime">${timeago(e.at)}</span></div>`;}).join('');
+  el('#rows').innerHTML=`<div class="home">
+    <div class="overallcov"><div class="bignum">${ov.pct||0}<span>%</span></div>
+      <div><div class="ovlabel">RetroAchievements coverage</div><div class="ovsub">${ov.owned||0} of ${ov.catalog||0} catalog games owned</div></div></div>
+    <h3 class="homeh">Coverage by system
+      ${doneN?`<span class="donechip" title="systems with 100% RA coverage">✓ ${doneN} system${doneN===1?'':'s'} at 100%</span>`:''}</h3>
+    ${incomplete.length?`<div class="covgrid">${cards}</div>`
+      :'<div class="allgreen">🎉 Every system is at 100% RA coverage.</div>'}
+    <h3 class="homeh">Activity</h3><div class="feed">${feed||'<div class="empty">No activity yet — it fills up as RA adds games and RomFleet sources them.</div>'}</div>
+  </div>`; }
+async function loadCategories(f){
+  const cats=await j(`/api/systems/${f}/categories`);
+  const cur=el('#catFilter').value;
+  el('#catFilter').innerHTML='<option value="">type: all</option>'+
+    cats.map(c=>`<option value="${c.category}">${c.label||c.category} (${c.count})</option>`).join('');
+  if([...el('#catFilter').options].some(o=>o.value===cur)) el('#catFilter').value=cur; }
+
+async function loadSystemConfig(f){
+  const c=await j(`/api/systems/${f}/config`);
+  const gset=new Set(c.gates);
+  const gateBoxes=c.available_gates.map(g=>`<label class="gchk ${g.available?'':'off'}" title="${g.available?'membership from '+g.label:'no DAT for this system yet'}">
+     <input type="checkbox" value="${g.id}" ${gset.has(g.id)?'checked':''} ${g.available?'':'disabled'} onchange="saveGates()">${g.label}</label>`).join('');
+  const selOpts=[['1g1r','1G1R — one best version'],['fullset','Full set — every version']]
+     .map(([v,l])=>`<option value="${v}" ${v===c.selection?'selected':''}>${l}</option>`).join('');
+  const cmpOpts=[['none','Compress: none'],['rvz','Compress: RVZ (GC/Wii)']]
+     .map(([v,l])=>`<option value="${v}" ${v===(c.compress||'none')?'selected':''}>${l}</option>`).join('');
+  const onlyRA=c.gates.length===1 && c.gates[0]==='ra';
+  el('#sysConfig').style.display='';
+  el('#sysConfig').innerHTML=`
+    <span class="cfglbl">Membership</span>
+    <span class="gates">${gateBoxes}</span>
+    <span class="cfglbl">Selection</span>
+    <select id="selSel" onchange="changeSel(this.value)" ${onlyRA?'disabled title="RA is already one-per-game; applies to DAT sources"':''}>${selOpts}</select>
+    <select id="cmpSel" onchange="changeCompress(this.value)" title="Convert .iso/.gcm to .rvz on publish (lossless, RA hash unchanged)">${cmpOpts}</select>
+    <button class="btn2" onclick="rederive()">↻ Re-derive</button>
+    <button class="btn2" onclick="openOrganize()">🧹 Organize…</button>
+    <button class="btn2" onclick="publishLibrary()">📤 Publish…</button>
+    <span class="cfghint">Members = in ANY checked archive. Organize cleans names; Publish moves keepers to the canonical library.</span>`;
+}
+async function putConfig(body){ return fetch(`/api/systems/${current}/config`,{method:'PUT',
+  headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); }
+async function saveGates(){
+  const gates=[...document.querySelectorAll('#sysConfig .gates input:checked')].map(i=>i.value);
+  if(!gates.length){ toast('Pick at least one archive',3000,true); return loadSystemConfig(current); }
+  await putConfig({gate:gates}); loadSystemConfig(current); }
+async function changeSel(v){ await putConfig({selection:v}); }
+async function changeCompress(v){ await putConfig({compress:v}); }
+async function publishLibrary(){
+  busy(true,'computing publish plan…');
+  const p=await j(`/api/systems/${current}/publish/plan`); busy(false);
+  const s=p.summary;
+  if(!s.publish){ toast(s.already?`Already published — ${s.already} in library`:'Nothing to publish (no gated keepers)',4500); return; }
+  const cvt=s.convert?`\n${s.convert} .iso/.gcm will be compressed to .rvz (slower — decompress+recompress).`:'';
+  if(!confirm(`Publish ${s.publish} files (${hbytes(s.bytes)}) into the canonical library:\n${p.canonical_root}${cvt}\n\nSource is a read-only master and stays untouched. Re-runs skip files already published. Proceed?`)) return;
+  busy(true,`publishing ${s.publish} files…`);
+  const r=await(await fetch(`/api/systems/${current}/publish/apply?confirm=true`,{method:'POST'})).json(); busy(false);
+  toast(`Published ${current}: ${r.published} copied${r.converted?', '+r.converted+'→rvz':''}${r.renamed?', '+r.renamed+' renamed':''} (${hbytes(r.bytes_moved)})${r.errors?', '+r.errors+' err':''} · ${r.manifest}`);
+  loadRoms(); loadStats(); loadSystems(); }
+async function rederive(){ busy(true,'re-deriving from stored hashes…');
+  const r=await(await fetch(`/api/systems/${current}/reingest`,{method:'POST'})).json();
+  busy(false);
+  toast(`${current} · ${(r.gate||[]).join('+')} / ${r.selection}: ${r.matched} in library, ${r.unmatched} not members`);
+  loadRoms(); loadStats(); loadSystems(); }
+
+// ---------- organize (dry-run → apply → rollback) ----------
+function hbytes(n){ n=n||0; const u=['B','KB','MB','GB','TB']; let i=0; while(n>=1024&&i<u.length-1){n/=1024;i++;} return n.toFixed(n<10&&i>0?1:0)+' '+u[i]; }
+async function openOrganize(){
+  el('#org-ov').style.display='block'; el('#organize').style.display='block';
+  el('#orgTitle').textContent=`Organize ${current}`;
+  el('#org-body').innerHTML='<div class="empty">Computing dry-run…</div>';
+  const [p,q]=await Promise.all([j(`/api/systems/${current}/organize/plan`),
+                                 j(`/api/systems/${current}/organize/quarantine`)]);
+  renderOrgPlan(p,q); }
+function closeOrganize(){ el('#org-ov').style.display='none'; el('#organize').style.display='none'; }
+
+// ---------- missing / wanted list ----------
+let missData=null, missHideSub=true;
+async function openMissing(){ if(!current) return;
+  el('#miss-ov').style.display='block'; el('#missing').style.display='block';
+  el('#missTitle').textContent=`Missing — ${current}`;
+  el('#miss-body').innerHTML='<div class="empty">Comparing the catalog to what you own…</div>';
+  missData=await j(`/api/systems/${current}/missing`); renderMissing(); }
+function closeMissing(){ el('#miss-ov').style.display='none'; el('#missing').style.display='none'; }
+async function sourceMissing(){
+  if(!confirm(`Auto-source ${missData.missing.length} missing game(s) from archive.org?\n\nEach download is hash-verified against RA before it's kept — wrong/renamed files are rejected.`)) return;
+  el('#miss-body').innerHTML='<div class="empty">Sourcing + verifying from archive.org…</div>';
+  const r=await(await fetch(`/api/systems/${current}/source-missing`,{method:'POST'})).json();
+  if(r.error){ toast('Source: '+r.error,6000,true); return openMissing(); }
+  toast(`Sourced ${r.sourced} verified✓${r.not_found?', '+r.not_found+' not found':''}${r.mismatch?', '+r.mismatch+' hash-mismatch':''}`,6000);
+  loadRoms(); loadStats(); loadSystems(); openMissing(); }
+function toggleSub(){ missHideSub=!missHideSub; renderMissing(); }
+function isVariant(m){ return /\[(Subset|Bonus)/i.test(m.title||''); }
+function renderMissing(){ const d=missData; if(!d) return;
+  const variants=d.missing.filter(isVariant).length;
+  const list=missHideSub? d.missing.filter(m=>!isVariant(m)) : d.missing;
+  const rows=list.map(m=>`<tr>
+    <td><b>${m.title}</b>${m.category?' '+catBadge(m.category):''}${m.no_hash?' <span style="color:var(--mut);font-size:10px">no ROM yet</span>':''}${m.region?` <span style="color:var(--mut);font-size:10px">${m.region}</span>`:''}</td>
+    <td class="ach">${m.achievements?m.achievements+' 🏆':''}</td>
+    <td>${m.url?`<a href="${m.url}" target="_blank" class="ext">↗ RA</a>`:''}</td></tr>`).join('');
+  el('#miss-body').innerHTML=`
+    <div class="orgsum">
+      <span class="pill miss">${list.length} to find</span>
+      <span class="cfglbl">catalog ${d.catalog} · you own ${d.owned} · gate ${(d.gate||'').toUpperCase()}</span>
+      ${list.length?`<button class="btn" style="margin-left:auto" onclick="sourceMissing()">⬇ Auto-source ${list.length}</button>`:''}
+    </div>
+    <p class="orgnote">Games the ${(d.gate||'').toUpperCase()} catalog knows that no owned ROM covers — your wanted list. ${variants?`<label style="cursor:pointer;white-space:nowrap"><input type="checkbox" ${missHideSub?'checked':''} onchange="toggleSub()"> hide ${variants} subsets/variants</label>`:''}</p>
+    <div class="orgtable"><table class="misstable"><thead><tr><th>Game</th><th class="ach">Achv</th><th></th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="3" style="color:var(--mut)">Nothing missing — you own the whole catalog. 🎉</td></tr>'}</tbody></table></div>`;
+}
+function renderOrgPlan(p,q){ const s=p.summary;
+  const rows=p.actions.filter(a=>a.op!=='keep').slice(0,500).map(a=>`<tr class="op-${a.op}">
+     <td>${a.op}</td><td>${a.from}</td><td>${a.op==='rename'?'→ '+a.to:'→ _quarantine/'}</td><td class="rsn">${a.reason}</td></tr>`).join('');
+  const changes=s.rename+s.quarantine;
+  el('#org-body').innerHTML=`
+    <div class="orgsum">
+      <span class="pill ok">${s.keep} keep</span>
+      <span class="pill" style="background:rgba(88,166,255,.15);color:var(--accent)">${s.rename} rename</span>
+      <span class="pill miss">${s.quarantine} quarantine</span>
+      <span class="cfglbl">gate ${p.gate.join('+')} · ${p.selection}</span>
+    </div>
+    <p class="orgnote"><b>Dry-run — nothing has changed.</b> Renames use the archive's canonical name. Non-members${p.selection==='1g1r'?' and 1G1R extra versions':''} move to <code>_quarantine/</code> — <b>never deleted</b>. A manifest is written first so you can roll the whole run back.</p>
+    <div class="orgtable"><table><thead><tr><th>op</th><th>file</th><th>target</th><th>why</th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="4" style="color:var(--mut)">Nothing to change — already aligned to this archive.</td></tr>'}</tbody></table></div>
+    ${changes>500?'<p class="orgnote">Showing first 500 of '+changes+' changes.</p>':''}
+    <div class="orgactions">
+      <button class="btn" ${changes?'':'disabled'} onclick="applyOrganize(${changes})">Apply — move ${changes} files</button>
+      <button class="btn2" onclick="loadOrgManifests()">↺ Rollback a previous run…</button>
+      <span id="orgManifests"></span>
+    </div>
+    <div class="orgpurge">${q && q.count
+      ? `<span class="pill miss">${q.count} in _quarantine · ${hbytes(q.bytes)}</span>
+         <button class="btn danger" onclick="purgeQuarantine(${q.bytes})">🗑 Purge — reclaim ${hbytes(q.bytes)}</button>
+         <span class="cfglbl">permanently deletes reviewed extras · irreversible (purge log kept)</span>`
+      : `<span class="cfglbl">🗑 _quarantine is empty — Apply a plan first, then purge here to reclaim disk space</span>`}
+    </div>`; }
+async function purgeQuarantine(bytes){
+  if(!confirm(`Permanently delete everything in _quarantine to reclaim ${hbytes(bytes)}?\n\nThis is the one irreversible step — the reviewed non-members/extras are deleted. A purge log is written for the record.`)) return;
+  el('#orgBusy').textContent='purging…';
+  const r=await(await fetch(`/api/systems/${current}/organize/purge?confirm=true`,{method:'POST'})).json();
+  el('#orgBusy').textContent='';
+  toast(`Purged ${current}: ${r.purged} files deleted, reclaimed ${hbytes(r.bytes_freed)}`);
+  loadRoms(); loadStats(); loadSystems(); openOrganize(); }
+async function applyOrganize(n){
+  if(!confirm(`Rename members to canonical names and move ${n} non-members/extras into _quarantine/?\n\nFiles are moved, never deleted. A manifest is written so this is fully reversible.`)) return;
+  el('#orgBusy').textContent='applying…';
+  const r=await(await fetch(`/api/systems/${current}/organize/apply?confirm=true`,{method:'POST'})).json();
+  el('#orgBusy').textContent='';
+  toast(`Organized ${current}: ${r.applied} moved${r.errors?', '+r.errors+' errors':''} · rollback via ${r.manifest}`);
+  loadRoms(); loadStats(); loadSystems(); openOrganize(); }
+async function loadOrgManifests(){
+  const ms=await j(`/api/systems/${current}/organize/manifests`);
+  el('#orgManifests').innerHTML=ms.length? ms.map(m=>`<button class="btn2" title="${m.gate?.join?m.gate.join('+'):''} · ${m.selection} · ${m.ops} moves" onclick="rollbackOrganize('${m.manifest}')">↺ ${m.created}</button>`).join(' ')
+     : '<span class="cfglbl">no runs to roll back</span>'; }
+async function rollbackOrganize(name){
+  if(!confirm('Roll back this run — move every file back to its original name/location?')) return;
+  el('#orgBusy').textContent='rolling back…';
+  const r=await(await fetch(`/api/systems/${current}/organize/rollback?manifest=${encodeURIComponent(name)}`,{method:'POST'})).json();
+  el('#orgBusy').textContent='';
+  toast(`Rolled back: ${r.restored} restored${r.skipped?', '+r.skipped+' skipped':''}`);
+  loadRoms(); loadStats(); loadSystems(); openOrganize(); }
+async function loadRoms(){ if(!current) return;
+  const st=el('#statusFilter').value, q=el('#search').value.trim(), miss=el('#missingFilter').value, cat=el('#catFilter').value;
+  const d=await j(`/api/systems/${current}/roms?limit=4000`+(st?`&status=${st}`:'')+(q?`&q=${encodeURIComponent(q)}`:'')+(miss?`&missing=${miss}`:'')+(cat?`&category=${encodeURIComponent(cat)}`:''));
+  el('#count').textContent=`${d.roms.length} of ${d.total}`;
+  el('#rows').innerHTML = d.roms.length ? `<table><thead><tr><th>Game</th><th>File</th><th>Match</th><th>Media</th></tr></thead><tbody>`+
+    d.roms.map(r=>{ const s=splitTitle(r.game); const cat=r.category||s.cat;
+      return `<tr class="row" data-gid="${r.game_id||''}" data-rid="${r.id}" data-fn="${encodeURIComponent(r.filename)}">
+      <td class="game">${r.game?s.t:'<span class="unm">— unmatched —</span>'}${catBadge(cat)}</td>
+      <td class="file">${r.filename}</td>
+      <td>${badges(r.matched_dbs)||'<span class="badge" style="opacity:.4">none</span>'}</td>
+      <td>${covCell(r.coverage)}</td></tr>`; }).join('')+`</tbody></table>`
+    : '<div class="empty">No matching files.</div>';
+  document.querySelectorAll('tr.row').forEach(tr=>tr.onclick=()=>rowClick(tr)); }
+
+async function rowClick(tr){ const gid=tr.dataset.gid, rid=tr.dataset.rid, fn=decodeURIComponent(tr.dataset.fn);
+  if(gid){ openGame(+gid); }
+  else { const title=prompt("No database match. Create a manual entry — game title:", fn.replace(/\.[^.]+$/,''));
+    if(!title) return;
+    game=await j(`/api/roms/${rid}/manual`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title})});
+    renderModal(); loadRoms(); loadStats(); } }
+async function openGame(id){ game=await j(`/api/games/${id}`); renderModal(); }
+
+const FIELDS=[["title","Title"],["category","Category"],["sort_title","Sort title"],["region","Region"],["players","Players"],
+  ["genre","Genre"],["developer","Developer"],["publisher","Publisher"],["release_date","Release date"],["rating","Rating"]];
+function renderModal(){
+  const s=splitTitle(game.title); const cat=game.category||s.cat;
+  const star=`<span class="favstar ${game.is_favorite?'on':''}" onclick="toggleFavorite()" title="${game.is_favorite?'Favorite — click to remove':'click to mark Favorite (syncs to all endpoints)'}">${game.is_favorite?'★':'☆'}</span>`;
+  el('#mTitle').innerHTML = `${star}${s.t}${catBadge(cat)}${game.is_manual?'<span class="cat cat-manual">manual</span>':''}${ratingWidget()}${hideWidget()}`;
+  const raUrl=game.ra_game_id?`https://retroachievements.org/game/${game.ra_game_id}`:'';
+  const sub=`<div class="gsub">${game.system_name?`<span class="chip sysc" onclick="selectSystem('${game.system_folder}');closeModal()" title="Open ${game.system_name}">🎮 ${game.system_name}</span>`:''}${raUrl?`<a class="ralink" href="${raUrl}" target="_blank" rel="noopener" title="Open this game on RetroAchievements"><img src="/static/ra.webp" class="ralogo">RetroAchievements ↗</a>`:''}</div>`;
+  const c=game.coverage||{missing_media:[],metadata_missing:[],complete:false,media_total:0};
+  const audit=`<div class="sect"><h3>Content audit</h3><div class="auditbar">
+    <span class="chip ${c.complete?'ok':'bad'}">${c.complete?'✓ complete':'incomplete'}</span>
+    <span class="chip">${c.media_total} media files</span>
+    ${c.missing_media.length?`<span class="chip bad">missing media: ${c.missing_media.join(', ')}</span>`:'<span class="chip ok">core media ✓</span>'}
+    ${c.metadata_missing.length?`<span class="chip bad">missing metadata: ${c.metadata_missing.join(', ')}</span>`:'<span class="chip ok">metadata ✓</span>'}
+    </div></div>`;
+  const locked=new Set(game.locked_fields||[]);
+  const meta=`<div class="sect"><h3>Metadata ${game.metadata_source?`· source: ${game.metadata_source}`:''}</h3>
+    <div class="auditbar" style="margin-bottom:12px">
+      ${['ra','lbdb','tgdb','igdb','ss','emumovies'].map(x=>srcBtn(x)).join('')}
+      <span class="chip">fills unlocked fields · unlock to re-source</span></div>
+    <div class="grid">`+
+    FIELDS.map(([k,l])=>`<label>${l} <span class="lk" onclick="toggleLock('${k}')" title="${locked.has(k)?'locked — click to unlock':'click to lock'}">${locked.has(k)?'🔒':'🔓'}</span></label>
+      <input data-k="${k}" data-orig="${(game[k]??'').toString().replace(/"/g,'&quot;')}" value="${(game[k]??'').toString().replace(/"/g,'&quot;')}">`).join('')+
+    `<label>Description <span class="lk" onclick="toggleLock('description')" title="${locked.has('description')?'locked':'click to lock'}">${locked.has('description')?'🔒':'🔓'}</span></label>
+      <textarea data-k="description" data-orig="${(game.description??'').replace(/"/g,'&quot;')}">${game.description??''}</textarea></div></div>`;
+  const rom0=(game.roms||[])[0]||{};
+  const S=game.source_ids||{};
+  const id=`<div class="sect"><h3>Identity</h3><div class="grid">
+      <label>RA game id</label><div>${game.ra_game_id??'—'}${srcLink('ra',game.ra_game_id)}${idName('ra')} · ${game.num_achievements} ach / ${game.points} pts</div>
+      <label>DB matches</label><div>${badges(Object.keys(rom0.dat_matches||{}))||'—'}</div>
+      <label>RA hash name</label><div class="file">${rom0.ra_hash_name||'—'}</div>
+      <label>Find in LBDB</label><div>
+        <input id="lbdbq" placeholder="search LaunchBox DB by name" style="width:230px" onkeydown="if(event.key==='Enter')searchLbdb()">
+        <button class="btn2" onclick="searchLbdb()">🔎 search</button>
+        <div id="lbdbresults"></div></div>
+      <label>LBDB id</label><div><input id="lbdbid" value="${S.lbdb??''}" placeholder="exact DatabaseID" style="width:130px">
+        <button class="btn2" onclick="applyId('lbdb')">apply</button>${srcLink('lbdb',S.lbdb,s.t)}${idName('lbdb')}</div>
+      <label>TGDB id</label><div><input id="tgdbid" value="${S.tgdb??''}" placeholder="e.g. 88168" style="width:130px">
+        <button class="btn2" onclick="applyId('tgdb')">apply</button>${srcLink('tgdb',S.tgdb)}${idName('tgdb')}</div>
+      <label>IGDB id</label><div><input id="igdbid" value="${S.igdb??''}" placeholder="IGDB game id" style="width:130px">
+        <button class="btn2" onclick="applyId('igdb')">apply</button>${srcLink('igdb',S.igdb,s.t)}${idName('igdb')}</div>
+      <label>ScreenScraper id</label><div><input id="ssid" value="${S.ss??''}" placeholder="SS jeu id" style="width:130px">
+        <button class="btn2" onclick="applyId('ss')">apply</button>${srcLink('ss',S.ss)}${idName('ss')}</div>
+      <label>EmuMovies title</label><div><input id="emumoviesid" value="${S.emumovies??''}" placeholder="exact EmuMovies title" style="width:200px">
+        <button class="btn2" onclick="applyId('emumovies')">apply</button></div></div></div>`;
+  const byType={}; (game.media||[]).forEach(m=>(byType[m.media_type]=byType[m.media_type]||[]).push(m));
+  const media=`<div class="sect"><h3>Media</h3><div class="media">`+ MTYPES.map(t=>{
+    const list=byType[t]||[];
+    const assets=list.map(m=>`<div class="asset ${m.is_primary?'primary':''} ${m.is_locked?'mlock':''}">`+
+      (t==='video'?`<video src="${m.url}" preload="metadata" onclick="lightbox('${m.url}','video')"></video>`
+                  :`<img src="${m.url}" loading="lazy" onclick="lightbox('${m.url}','img')">`)+
+      `<div class="ops">${m.is_primary?'★':`<a onclick="setPrimary(${m.id})">★</a>`}`+
+      `<a onclick="mediaLock(${m.id})" title="lock media">${m.is_locked?'🔒':'🔓'}</a>`+
+      `<a class="del" onclick="delMedia(${m.id})">✕</a></div></div>`).join('')
+      || `<div class="noimg">missing</div>`;
+    return `<div class="mtype ${list.length?'':'missing'}"><div class="lab">${t}</div>${assets}
+      <label class="uplabel">＋ upload<input type="file" onchange="uploadMedia(event,'${t}')" accept="${t==='video'?'video/*':'image/*'}"></label></div>`;
+  }).join('')+`</div></div>`;
+  const roms=`<div class="sect"><h3>Files</h3>`+ (game.roms||[]).map(r=>`<div class="file">${r.filename} (${r.status})</div>`).join('')+`</div>`;
+  el('#mBody').innerHTML = sub+audit+meta+id+media+roms; busy(false);
+  el('#overlay').style.display='block'; el('#modal').style.display='block';
+}
+function closeModal(){ el('#overlay').style.display='none'; el('#modal').style.display='none'; game=null; }
+
+async function saveGame(){   // only send fields the user actually changed
+  const patch={}; document.querySelectorAll('#mBody [data-k]').forEach(i=>{ if(i.value!==(i.dataset.orig??'')) patch[i.dataset.k]=i.value; });
+  if(!Object.keys(patch).length){ busy(true,'nothing changed'); setTimeout(()=>busy(false),700); return; }
+  busy(true,'saving…');
+  game=await j(`/api/games/${game.id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(patch)});
+  renderModal(); loadRoms(); loadStats();
+}
+async function toggleLock(field){
+  const isLocked=(game.locked_fields||[]).includes(field);
+  await fetch(`/api/games/${game.id}/lock/${field}`,{method:isLocked?'DELETE':'POST'});
+  game=await j(`/api/games/${game.id}`); renderModal();
+}
+async function mediaLock(id){ await fetch(`/api/media/${id}/lock`,{method:'PATCH'}); game=await j(`/api/games/${game.id}`); renderModal(); }
+async function toggleFavorite(){ await fetch(`/api/games/${game.id}/favorite`,{method:'POST'}); game=await j(`/api/games/${game.id}`); renderModal(); }
+function ratingWidget(){
+  const r=game.star_rating, c=game.community_rating, personal=(r!=null);
+  const eff=personal?r:(c!=null?c:0);
+  let stars='';
+  for(let i=1;i<=5;i++){ const on=i<=Math.round(eff);
+    stars+=`<span class="rstar ${on?'on':''} ${personal?'':'comm'}" onclick="setRating(${i})" title="set ${i} star${i>1?'s':''}">${on?'★':'☆'}</span>`; }
+  const tag = personal ? `<span class="rclear" onclick="setRating(0)" title="clear your grade → fall back to community">✕</span>`
+            : (c!=null ? `<span class="rhint">community ${c.toFixed(1)}</span>` : '');
+  return `<span class="ratingw" title="${personal?'your grade':'community score — click to set your own'}">${stars}${tag}</span>`;
+}
+async function setRating(v){ await fetch(`/api/games/${game.id}/rating?value=${v}`,{method:'POST'}); game=await j(`/api/games/${game.id}`); renderModal(); }
+function hideWidget(){
+  const h=game.hidden_on||[]; const all=h.includes('*');
+  const label = all?'🙈 Hidden · all agents' : (h.length?`🙈 Hidden · ${h.join(', ')}`:'👁 Visible');
+  return `<span class="hidew ${h.length?'on':''}" onclick="toggleHideMenu(event)" title="hide this game on specific agents or all"> ${label} ▾<div id="hideMenu" class="deploymenu" style="display:none"></div></span>`; }
+async function toggleHideMenu(e){ e.stopPropagation(); const m=el('#hideMenu');
+  if(m.style.display==='block'){ m.style.display='none'; return; }
+  const d=await j('/api/endpoints'); const h=game.hidden_on||[]; const all=h.includes('*');
+  let items=`<a onclick="setHiddenAll()">${all?'✓ ':'&nbsp;&nbsp;&nbsp;'}Hide on ALL agents</a>`;
+  items+=(d.endpoints||[]).map(ep=>{ const on=all||h.includes(ep.name); return `<a onclick="toggleHideEp('${ep.name}')">${on?'✓ ':'&nbsp;&nbsp;&nbsp;'}Hide on ${ep.label}</a>`; }).join('');
+  items+=`<a onclick="showEverywhere()">👁 Show everywhere</a>`;
+  m.innerHTML=items; m.style.display='block'; }
+async function setHidden(arr){ const m=el('#hideMenu'); if(m)m.style.display='none';
+  await fetch(`/api/games/${game.id}/hidden`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hidden_on:arr})});
+  game=await j(`/api/games/${game.id}`); renderModal(); }
+function setHiddenAll(){ setHidden((game.hidden_on||[]).includes('*')?[]:['*']); }
+function showEverywhere(){ setHidden([]); }
+function toggleHideEp(name){ let h=(game.hidden_on||[]).filter(x=>x!=='*'); h=h.includes(name)?h.filter(x=>x!==name):h.concat([name]); setHidden(h); }
+function lightbox(url,kind){
+  el('#lbcontent').innerHTML = kind==='video'?`<video src="${url}" controls autoplay></video>`:`<img src="${url}">`;
+  el('#lightbox').style.display='flex';
+}
+function closeLightbox(){ el('#lightbox').style.display='none'; el('#lbcontent').innerHTML=''; }
+async function searchLbdb(){
+  const q=el('#lbdbq').value.trim(); if(!q) return;
+  el('#lbdbresults').innerHTML='<span class="chip">searching…</span>';
+  const rows=await j(`/api/lbdb/search?console_id=${game.console_id}&q=${encodeURIComponent(q)}`);
+  el('#lbdbresults').innerHTML = rows.length
+    ? rows.map(r=>`<div class="lbrow" onclick="pickLbdb(${r.id})"><b>#${r.id}</b> · ${r.name}</div>`).join('')
+    : '<span class="chip bad">no results</span>';
+}
+async function pickLbdb(id){ el('#lbdbid').value=id; await applyId('lbdb'); }
+async function applyId(src){
+  const v=el(`#${src}id`).value.trim(); if(!v){ busy(true,'enter an id'); setTimeout(()=>busy(false),800); return; }
+  busy(true,`applying ${src.toUpperCase()} #${v}…`);
+  const r=await fetch(`/api/games/${game.id}/source-id?source=${src}&value=${encodeURIComponent(v)}`,{method:'POST'});
+  if(!r.ok){ busy(false); alert((await r.json()).detail||'failed'); return; }
+  game=await r.json(); const res=game._scrape||{}; renderModal(); loadRoms(); loadStats();
+  const n=scrapeNote(src,res); toast(`#${v} → ${n.msg}`, n.bad?7000:4500, n.bad);
+}
+async function fillFrom(src){
+  document.querySelectorAll('[data-fb]').forEach(b=>b.disabled=true); busy(true,`pulling from ${src.toUpperCase()}…`);
+  const r=await fetch(`/api/games/${game.id}/scrape?source=${src}`,{method:'POST'});
+  if(!r.ok){ let m='failed'; try{ m=(await r.json()).detail||m; }catch(e){} busy(false); alert(`Fill from ${src.toUpperCase()}: ${m}`);
+    document.querySelectorAll('[data-fb]').forEach(b=>b.disabled=false); return; }
+  const d=await r.json(); game=d; const res=d._scrape||{};
+  renderModal(); loadRoms(); loadStats();
+  const n=scrapeNote(src,res); toast(n.msg, n.bad?7000:4500, n.bad);
+}
+async function uploadMedia(ev,type){ const f=ev.target.files[0]; if(!f) return;
+  busy(true,`uploading ${type}…`); const fd=new FormData(); fd.append('media_type',type); fd.append('file',f);
+  game=await j(`/api/games/${game.id}/media`,{method:'POST',body:fd}); renderModal(); loadRoms(); loadStats(); }
+async function setPrimary(id){ await fetch(`/api/media/${id}/primary`,{method:'PATCH'}); game=await j(`/api/games/${game.id}`); renderModal(); }
+async function delMedia(id){ const r=await fetch(`/api/media/${id}`,{method:'DELETE'});
+  if(!r.ok){ alert((await r.json()).detail||'delete failed'); return; }
+  game=await j(`/api/games/${game.id}`); renderModal(); loadStats(); }
+
+async function scrapeAll(src){ if(!current) return;
+  const r=await fetch(`/api/systems/${current}/scrape-all?source=${src}`,{method:'POST'});
+  if(!r.ok){ alert((await r.json()).detail||'failed'); return; }
+  el('#count').textContent=`scraping all (${src})…`;
+  const poll=setInterval(async()=>{ const s=await j(`/api/systems/${current}/scrape-status`);
+    if(s.running){ el('#count').textContent=`${src}: ${s.done||0}/${s.total||'…'} (${s.matched||0} matched)`; }
+    else { clearInterval(poll); el('#count').textContent=s.error?`${src} error: ${s.error}`:
+      `${src} done: ${s.matched||0} matched${s.images?', '+s.images+' images':''} of ${s.total||0} needing content`;
+      loadRoms(); loadStats(); } }, 2000); }
+
+// ---- settings (tabs: priority scoring + media completeness) ----
+let scfg=null, sallRegions=[], ccfg=null, callMedia=[], callMeta=[], cCats=[], sTab='scoring', editProfile='default';
+let credSchema=null, credVals=null, credEdits={};
+async function openSettings(){
+  const d=await j('/api/settings/scoring'); scfg=JSON.parse(JSON.stringify(d.config)); sallRegions=d.all_regions;
+  const c=await j('/api/settings/completeness'); ccfg=JSON.parse(JSON.stringify(c.config)); callMedia=c.all_media; callMeta=c.all_meta; cCats=c.known_categories;
+  const cr=await j('/api/settings/credentials'); credSchema=cr.schema; credVals=cr.values; credEdits={};
+  sTab='scoring'; editProfile='default'; document.querySelectorAll('#settings .tab').forEach(b=>b.classList.toggle('active',b.dataset.t==='scoring'));
+  renderTab(); el('#settings-ov').style.display='block'; el('#settings').style.display='block'; }
+function closeSettings(){ el('#settings-ov').style.display='none'; el('#settings').style.display='none'; }
+function setTab(t){ sTab=t; document.querySelectorAll('#settings .tab').forEach(b=>b.classList.toggle('active',b.dataset.t===t)); renderTab(); }
+function renderTab(){ sTab==='scoring'?renderScoring():sTab==='completeness'?renderCompleteness():sTab==='dats'?renderDats():renderCredentials(); }
+async function renderDats(){
+  const d=await j('/api/settings/dat-sources');
+  const fmt=(iso)=>iso?new Date(iso).toLocaleString():'<span style="color:var(--mut)">never</span>';
+  const cad=(cur)=>d.cadences.map(c=>`<option value="${c}" ${c===cur?'selected':''}>${c}</option>`).join('');
+  const summ=(r)=>{ if(!r) return ''; const p=Object.entries(r).map(([k,v])=>`${k} ${v}`).join(' · '); return `<div style="color:var(--mut);font-size:11px">${p}</div>`; };
+  const rows=d.sources.map(s=>`<tr>
+    <td><b>${s.label}</b><div style="color:var(--mut);font-size:11px">${s.pullable?'pullable':'upload only'}</div></td>
+    <td>${fmt(s.last_update)}${summ(s.last_result)}</td>
+    <td><select onchange="saveCadence('${s.id}',this.value)" ${s.pullable?'':'disabled title="upload-only source"'}>${cad(s.cadence)}</select></td>
+    <td>${s.pullable
+      ? `<button class="btn2" onclick="updateDat('${s.id}')">Update now</button>`
+      : `<label class="btn2" style="cursor:pointer">Upload…<input type="file" accept=".dat,.xml" style="display:none" onchange="uploadDat('${s.id}',this)"></label>`}</td></tr>`).join('');
+  el('#settings-body').innerHTML=`<div class="sect"><h3>DAT / membership sources</h3>
+    <p style="color:var(--mut);font-size:12.5px;margin:2px 0 10px"><b>RA is monitored hourly</b> via a single <i>New Releases</i> call — new sets are ingested, auto-sourced, and posted to Discord. A full all-console reconcile runs <b>nightly</b> to confirm counts. LLA pulls on its cadence. No-Intro / Redump have no open API — upload their DATs here.</p>
+    <label style="display:flex;gap:8px;align-items:center;margin:0 0 14px;font-size:13px;cursor:pointer">
+      <input type="checkbox" ${d.auto_source?'checked':''} onchange="saveAutoSource(this.checked)">
+      <span>🎯 <b>Auto-source</b> newly-missing games from archives <span style="color:var(--mut)">(hash-verified; new sets sourced hourly, plus a nightly cartridge sweep)</span></span></label>
+    <table class="dattab"><thead><tr><th>Source</th><th>Last update</th><th>Auto-update</th><th></th></tr></thead><tbody>${rows}</tbody></table>
+    <div id="datbusy" style="color:var(--accent);margin-top:12px;font-size:12.5px"></div></div>
+    <div class="sect"><h3>💬 Discord notifications</h3>
+    <p style="color:var(--mut);font-size:12.5px;margin:2px 0 10px">New RA releases post here: a card appears when a game is detected, then updates in place to <b>✅ sourced</b> or <b>❌ failed</b>. In Discord: <i>Channel → Edit → Integrations → Webhooks → New Webhook → Copy URL</i>, then paste below.</p>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input id="dhook" type="text" placeholder="https://discord.com/api/webhooks/…" value="${d.discord_webhook||''}" style="flex:1;padding:7px 9px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--fg);font-size:12.5px">
+      <button class="btn2" onclick="saveWebhook()">Save</button>
+      <button class="btn2" onclick="testWebhook()">Send test</button></div>
+    <div style="color:var(--mut);font-size:11px;margin-top:6px">${d.discord_configured?'✓ webhook configured':'not configured — notifications are off until a URL is saved'}</div></div>`;
+}
+async function saveCadence(id,v){ await fetch('/api/settings/dat-sources',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({[id]:{cadence:v}})}); }
+async function saveAutoSource(v){ await fetch('/api/settings/dat-sources',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({auto_source:v})}); }
+async function saveWebhook(){ const v=el('#dhook').value.trim(); await fetch('/api/settings/dat-sources',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({discord_webhook:v})}); el('#datbusy').textContent='webhook saved'; setTimeout(renderDats,900); }
+async function testWebhook(){ const v=el('#dhook').value.trim(); el('#datbusy').textContent='sending test…';
+  await fetch('/api/settings/dat-sources',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({discord_webhook:v})});
+  const r=await fetch('/api/settings/discord/test',{method:'POST'});
+  el('#datbusy').textContent=r.ok?'✓ test sent — check your Discord channel':'✗ test failed — verify the webhook URL'; }
+async function updateDat(id){ el('#datbusy').textContent=`updating ${id}…`;
+  const r=await(await fetch(`/api/dats/${id}/update`,{method:'POST'})).json();
+  el('#datbusy').textContent=`${id} done: ${Object.entries(r).map(([k,v])=>k+' '+v).join(', ')}`; setTimeout(renderDats,1200); }
+async function uploadDat(id,inp){ if(!inp.files||!inp.files[0]) return; el('#datbusy').textContent='uploading…';
+  const fd=new FormData(); fd.append('file',inp.files[0]);
+  const r=await(await fetch(`/api/dats/${id}/upload`,{method:'POST',body:fd})).json();
+  el('#datbusy').textContent=r.saved?`saved ${r.saved}`:(r.detail||'upload failed'); setTimeout(renderDats,1000); }
+
+function moveRegion(i,dir){ const a=scfg.region_order,j=i+dir; if(j<0||j>=a.length)return; [a[i],a[j]]=[a[j],a[i]]; renderScoring(); }
+function setCfg(k,v){ scfg[k]=v; refreshPreview(); }
+function sel(k,opts){ return `<select onchange="setCfg('${k}',this.value)">`+opts.map(([v,l])=>`<option value="${v}" ${scfg[k]==v?'selected':''}>${l}</option>`).join('')+`</select>`; }
+function chk(k){ return `<input type="checkbox" ${scfg[k]?'checked':''} onchange="setCfg('${k}',this.checked)">`; }
+function renderScoring(){
+  const regions=scfg.region_order.map((r,i)=>`<div class="srow"><span><b>${i+1}</b>${r}</span>
+    <span><button class="btn2" onclick="moveRegion(${i},-1)" ${i==0?'disabled':''}>↑</button>
+    <button class="btn2" onclick="moveRegion(${i},1)" ${i==scfg.region_order.length-1?'disabled':''}>↓</button></span></div>`).join('');
+  const mods=`<div class="sect"><h3>Modifiers</h3><div class="grid">
+    <label>Prefer higher revision</label><div>${chk('prefer_higher_revision')} <span class="chip">Rev 2 &gt; Rev 1</span></div>
+    <label>English translations</label><div>${sel('english_translation',[['accept','Accept'],['exclude','Exclude']])} &nbsp;rank after ${sel('english_translation_after',sallRegions.map(r=>[r,r]))}</div>
+    <label>Non-English translations</label><div>${sel('nonenglish_translation',[['last','Rank last'],['exclude','Exclude']])}</div>
+    <label>MSU-1 audio</label><div>${chk('msu_penalty')} <span class="chip">prefer the plain release</span></div>
+    <label>No-Intro &gt; RAPatches</label><div>${chk('nointro_over_rapatches')}</div></div></div>`;
+  el('#settings-body').innerHTML=`<div class="sect"><h3>Region priority — top wins</h3>${regions}</div>`+mods+`<div id="preview"></div>`;
+  refreshPreview();
+}
+async function refreshPreview(){
+  const rows=await j('/api/settings/scoring/preview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(scfg)});
+  el('#preview').innerHTML=`<div class="sect"><h3>Preview · sample hashes, best first</h3>`+
+    rows.map(r=>`<div class="prow ${r.excluded?'ex':''}"><span class="sc">${r.excluded?'excluded':r.score}</span>${r.name}</div>`).join('')+`</div>`;
+}
+
+function setEditProfile(v){ editProfile=v; renderCompleteness(); }
+function curProf(){ return editProfile==='default'?ccfg.default:((ccfg.categories||{})[editProfile]||null); }
+function customize(){ ccfg.categories=ccfg.categories||{}; ccfg.categories[editProfile]={media:[...ccfg.default.media],meta:[...ccfg.default.meta]}; renderCompleteness(); }
+function removeOverride(){ delete (ccfg.categories||{})[editProfile]; renderCompleteness(); }
+function toggleReq(kind,val,on){ const a=curProf()[kind], i=a.indexOf(val); if(on&&i<0)a.push(val); if(!on&&i>=0)a.splice(i,1); }
+function renderCompleteness(){
+  const p=curProf();
+  let body=`<div class="sect"><h3>Completeness profile</h3><div class="auditbar">Editing:
+    <select onchange="setEditProfile(this.value)"><option value="default" ${editProfile==='default'?'selected':''}>Default (all others)</option>`+
+    cCats.filter(c=>c!=='Released').map(c=>`<option value="${c}" ${editProfile===c?'selected':''}>${c}</option>`).join('')+`</select>`;
+  if(editProfile!=='default' && !p) body+=` <span class="chip">uses Default</span> <button class="btn2" onclick="customize()">Customize this category</button>`;
+  body+=`</div></div>`;
+  if(p){
+    body+=`<div class="sect"><h3>Required media</h3><div class="reqgrid">`+
+      callMedia.map(m=>`<label><input type="checkbox" ${p.media.includes(m)?'checked':''} onchange="toggleReq('media','${m}',this.checked)">${m}</label>`).join('')+
+      `</div><div style="color:var(--mut);font-size:12px;margin-top:6px">Unchecked = bonus (kept if downloaded, but not required for “complete”)</div></div>`;
+    body+=`<div class="sect"><h3>Required metadata</h3><div class="reqgrid">`+
+      callMeta.map(f=>`<label><input type="checkbox" ${p.meta.includes(f)?'checked':''} onchange="toggleReq('meta','${f}',this.checked)">${f}</label>`).join('')+`</div>`;
+    if(editProfile!=='default') body+=`<button class="btn2" style="margin-top:12px" onclick="removeOverride()">↺ Reset to Default (remove override)</button>`;
+    body+=`</div>`;
+  }
+  el('#settings-body').innerHTML=body;
+}
+
+function renderCredentials(){
+  let body=`<div class="sect" style="color:var(--mut);font-size:12px">Keys entered here override the server .env. Secrets are stored on the server and never shown again — leave a field blank to keep it.</div>`;
+  for(const src in credSchema){ const meta=credSchema[src];
+    body+=`<div class="sect"><h3 style="display:flex;align-items:center;gap:8px"><img class="ralogo" src="/static/${SRC_LOGO[src]}"> ${meta.label}
+      <span style="margin-left:auto"></span><span id="test-${src}" class="chip"></span>
+      <button class="btn2" onclick="testSource('${src}')">Test</button></h3><div class="grid">`;
+    for(const f of meta.fields){ const key=f[0],label=f[1],kind=f[2]; const v=credVals[key]||{};
+      const ph = kind==='secret' ? (v.masked||'not set') : (v.value?'':'not set');
+      const val = kind==='secret' ? '' : (v.value||'');
+      body+=`<label>${label}${v.source?` <span class="chip">${v.source}</span>`:''}</label>
+        <div><input type="${kind==='secret'?'password':'text'}" placeholder="${ph}" value="${(''+val).replace(/"/g,'&quot;')}"
+           oninput="credEdits['${key}']=this.value" style="width:100%"></div>`;
+    }
+    body+=`</div></div>`;
+  }
+  el('#settings-body').innerHTML=body;
+}
+async function testSource(src){
+  const t=el('#test-'+src); t.textContent='testing…'; t.className='chip';
+  if(Object.keys(credEdits).length) await fetch('/api/settings/credentials',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(credEdits)});
+  const r=await j('/api/settings/credentials/test?source='+src,{method:'POST'});
+  t.textContent=(r.ok?'✓ ':'✕ ')+r.detail; t.className='chip '+(r.ok?'ok':'bad');
+}
+async function saveSettings(){
+  await fetch('/api/settings/scoring',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(scfg)});
+  await fetch('/api/settings/completeness',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(ccfg)});
+  if(Object.keys(credEdits).length) await fetch('/api/settings/credentials',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(credEdits)});
+  closeSettings(); loadStats(); if(current) loadRoms();
+}
+
+el('#statusFilter').onchange=loadRoms; el('#missingFilter').onchange=loadRoms; el('#catFilter').onchange=loadRoms;
+el('#search').oninput=()=>{clearTimeout(window._t); window._t=setTimeout(loadRoms,200);};
+document.onkeydown=(e)=>{ if(e.key==='Escape'){ if(el('#lightbox').style.display==='flex') closeLightbox(); else closeModal(); } };
+loadStats(); loadSystems();
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+# Fleet endpoints — the machines RomFleet projects the canonical library onto.
+#
+# `push-launchbox` renders one system at a time and ships it over SSH (render → tar → scp →
+# remote extract), so the endpoint does not need the canonical share mounted.
+#
+# Copy to config/endpoints.yaml and fill in your own values. That file is gitignored: it
+# holds host addresses, usernames, and the server-side path to a deploy key.
+#
+# ⚠️ The loader builds Endpoint(name=<key>, **cfg) — so these keys are EXACT. A missing or
+#    extra key raises TypeError at load. See backend/app/services/push_launchbox.py.
+#
+#   host        hostname or IP reachable over SSH
+#   ssh_user    SSH user on that machine
+#   ssh_key     path to the PRIVATE key RomFleet authenticates with
+#   lb_path     LaunchBox install dir on the endpoint (Data\ and Images\ sit under it)
+#   rom_base    where the endpoint expects its ROM library
+#   bundle_dir  server-side scratch dir where the render bundle is staged before push
+#
+# Set DEFAULT_ENDPOINT in .env to choose which of these commands assume.
+#
+# ⚠️ Generate the key OUTSIDE the repo tree — anything under config/ or deploy/ is one
+#    `git add -f` from being published:
+#      install -d -m 700 /var/lib/romfleet/endpoints/desktop
+#      ssh-keygen -t ed25519 -N "" -C romfleet-deploy@desktop \
+#        -f /var/lib/romfleet/endpoints/desktop/id_ed25519
+#    then append the .pub to the endpoint's authorized_keys.
+#    On Windows, an ADMIN account ignores %USERPROFILE%\.ssh\authorized_keys — the key must
+#    go in C:\ProgramData\ssh\administrators_authorized_keys (ACLs: Administrators + SYSTEM).
+#
+# ⚠️ This pusher targets **LaunchBox/BigBox on Windows** (`lb_path`, backslash paths). There
+#    is no Batocera/ES-DE renderer wired to this file yet, so a Linux endpoint has nothing to
+#    point at today.
+
+endpoints:
+  desktop:
+    host: 10.0.0.10
+    ssh_user: youruser
+    ssh_key: /var/lib/romfleet/endpoints/desktop/id_ed25519
+    lb_path: 'C:\Users\youruser\LaunchBox'   # LaunchBox install dir (Data\, Images\ under it)
+    rom_base: 'R:\romfleet\roms'             # canonical rom root as the endpoint sees it
+    bundle_dir: /var/lib/romfleet/bundles/desktop

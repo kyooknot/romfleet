@@ -1,0 +1,1809 @@
+{
+  "_comment": "ROM source archives on archive.org. 'loggedin'/restricted items need ia_creds.txt. layout: direct=/download/<item>/<prefix><name><suffix>; zip=that file is a per-game zip, extract the disc image. Match by fuzzy title+region, ALWAYS verify against the RA hash before install (cart=headerless/plain MD5; disc=app hasher via worker container).",
+  "homebrew_sources": {
+    "_comment": "Approved for ALL systems (homebrew/aftermarket long tail). itch.io is NOT HTTP-scrapable (JS/bot shell; needs a headless browser or its API + a claimed game), and GB Studio titles are often browser-play-only there — so these feed the DROP-OFF workflow: the Missing page links to the source, you download, drop into <canonical>/dropoff, and process-dropoff hashes+files it. Homebrew Hub serves direct GB/GBC/GBA ROM downloads and is a candidate for real auto-sourcing later.",
+    "itch": {
+      "url": "https://itch.io",
+      "search": "https://itch.io/search?q={title}",
+      "auto": false,
+      "systems": "all"
+    },
+    "homebrewhub": {
+      "url": "https://hh.gbdev.io",
+      "auto": "candidate",
+      "systems": [
+        "gb",
+        "gbc",
+        "gba"
+      ]
+    },
+    "planetvb": {
+      "url": "https://www.virtual-boy.com/homebrew/",
+      "search": "https://www.virtual-boy.com/?s={title}",
+      "auto": "candidate",
+      "systems": [
+        "virtualboy"
+      ],
+      "note": "Planet Virtual Boy homebrew. HTTP-scrapable: game page /homebrew/<slug>/ -> download page /downloads/<id>/ -> real file /downloads/<id>/get/<fileid> serves the raw headerless .vb (verified Virtual Picross v1.1 md5 bd7e84b0 == RA 2026-07-18)"
+    }
+  },
+  "cart": {
+    "_item": "ni-roms",
+    "_layout": "ni-roms/roms/<SystemZip>.zip/<Game>.zip (zip-view single-file)",
+    "verify": "headerless_md5 (NES strips iNES) / plain MD5",
+    "systems": {
+      "amstradcpc": "Amstrad - CPC (Misc).zip",
+      "appleii": "Apple - II (WOZ).zip",
+      "atari2600": "Atari - 2600.zip",
+      "atari7800": "Atari - 7800 (A78).zip",
+      "jaguar": "Atari - Jaguar (J64).zip",
+      "atarilynx": "Atari - Lynx (LNX).zip",
+      "wonderswan": "Bandai - WonderSwan.zip",
+      "wonderswancolor": "Bandai - WonderSwan Color.zip",
+      "colecovision": "Coleco - ColecoVision.zip",
+      "megaduck": "Welback - Mega Duck.zip",
+      "elektor": null,
+      "arcadia2001": "Emerson - Arcadia 2001.zip",
+      "channelf": "Fairchild - Channel F.zip",
+      "vectrex": "GCE - Vectrex.zip",
+      "interton": "Interton - VC 4000.zip",
+      "odyssey2": "Magnavox - Odyssey 2.zip",
+      "intellivision": "Mattel - Intellivision.zip",
+      "msx": "Microsoft - MSX.zip",
+      "msx2": null,
+      "pc8800": "NEC - PC-88 (Flux).zip",
+      "pcengine": "NEC - PC Engine - TurboGrafx-16.zip",
+      "n64": "Nintendo - Nintendo 64 (BigEndian).zip",
+      "n64dd": "Nintendo - Nintendo 64DD.zip",
+      "ndsi": "Nintendo - Nintendo DSi (Decrypted).zip",
+      "nes": "Nintendo - Nintendo Entertainment System (Headered).zip",
+      "fds": "Nintendo - Family Computer Disk System (FDS).zip",
+      "gb": "Nintendo - Game Boy.zip",
+      "gba": "Nintendo - Game Boy Advance.zip",
+      "gbc": "Nintendo - Game Boy Color.zip",
+      "pokemini": "Nintendo - Pokemon Mini.zip",
+      "satellaview": "Nintendo - Satellaview.zip",
+      "sufami": "Nintendo - Sufami Turbo.zip",
+      "virtualboy": "Nintendo - Virtual Boy.zip",
+      "sega32x": "Sega - 32X.zip",
+      "gamegear": "Sega - Game Gear.zip",
+      "megadrive": "Sega - Mega Drive - Genesis.zip",
+      "mastersystem": "Sega - Master System - Mark III.zip",
+      "sg1000": "Sega - SG-1000.zip",
+      "ngp": "SNK - NeoGeo Pocket.zip",
+      "ngpc": "SNK - NeoGeo Pocket Color.zip",
+      "snes": "Nintendo - Super Nintendo Entertainment System.zip",
+      "supervision": "Watara - Supervision.zip"
+    }
+  },
+  "disc": {
+    "_verify": "app hasher in worker container (e.g. psx_chd=`rahash 12`, gamecube=16); rahash can't read .chd/.rvz directly except where the hasher extracts first",
+    "psx": [
+      {
+        "region": "EU",
+        "item": "chd_psx_eur",
+        "layout": "direct",
+        "prefix": "CHD-PSX-EUR/",
+        "suffix": " (Europe).chd"
+      },
+      {
+        "region": "US",
+        "item": "2024-sony-playstation-usa-hearto-1g1r-collection",
+        "layout": "zip",
+        "prefix": "2024-sony-playstation-usa-hearto-1g1r-collection/Sony - Playstation - USA/",
+        "suffix": ".zip",
+        "format": "zip",
+        "note": "Redump-exact USA 1G1R (Hearto, 2024). The other US source (PS1_US_CHD_Arquivista) is NOT Redump-exact — its dumps are named '<title> (US) - CD{n}.chd' and hash-mismatch every time, which is why Arc the Lad III, Final Fantasy IX, Dragon Warrior VII and both Wing Commanders sat unsourceable while their discs were sitting in this set. Zips hold bin/cue; the PSX hasher reads archives directly."
+      },
+      {
+        "region": "US",
+        "item": "PS1_US_CHD_Arquivista",
+        "layout": "direct",
+        "suffix": " (US).chd",
+        "multidisc_suffix": " - CD{n}.chd"
+      },
+      {
+        "region": "JP",
+        "item": "PS1_JP_CHD_Arquivista",
+        "layout": "direct",
+        "suffix": " (JP).chd"
+      },
+      {
+        "region": "JP",
+        "item": "chd_psx_jap",
+        "layout": "direct",
+        "prefix": "CHD-PSX-JAP/",
+        "suffix": " (Japan).chd",
+        "format": "chd",
+        "note": "Redump JP CHDs under CHD-PSX-JAP/, exact Redump names incl (Disc n); title-fuzzy + hash-verified. Covers games absent from the Arquivista JP set (e.g. Book of Watermarks)."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Sony%20Playstation.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Sony Playstation'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "gamecube": [
+      {
+        "region": "US",
+        "item": "CentralArquivista-NintendoGameCube-US",
+        "layout": "direct",
+        "suffix": " (US).rvz",
+        "format": "rvz",
+        "restricted": false
+      },
+      {
+        "region": "EU",
+        "item": "zoocube",
+        "layout": "direct",
+        "prefix": "#/",
+        "suffix": ".iso",
+        "format": "iso",
+        "note": "no region tag in name; some have (Germany) etc.",
+        "restricted": false
+      },
+      {
+        "region": "JP",
+        "item": "GC-JP-Redump",
+        "layout": "zip",
+        "suffix": " (Japan).zip",
+        "format": "rvz-in-zip",
+        "restricted": false
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%20GameCube.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo GameCube'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "psp": [
+      {
+        "region": "US",
+        "item": "PSP_US_Arquivista",
+        "layout": "direct",
+        "suffix": " (US).iso",
+        "format": "iso"
+      },
+      {
+        "region": "EU",
+        "item": "PSP_EU_Arquivista",
+        "layout": "direct",
+        "suffix": " (EU).iso",
+        "format": "iso",
+        "note": "some names carry (EU - EN - NL) language tags"
+      },
+      {
+        "region": "JP",
+        "item": "PSP_JP_Arquivista",
+        "layout": "direct",
+        "suffix": " (JP).iso",
+        "format": "iso"
+      },
+      {
+        "region": "US",
+        "item": "the-legend-of-heroes-trails-in-the-sky-sc-.-psp",
+        "layout": "zip",
+        "suffix": ".zip",
+        "format": "zip",
+        "note": "Single 2.4GB zip of the PSP release. RA wants the PSN 2-disc set; the Arquivista PSP sets only carry the FIRST game (Trails in the Sky FC), which the sourcer kept downloading and the gate kept rejecting as a different dump. .iso is already in _IMG_EXT so the extractor hashes each disc inside."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Sony%20PSP.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Sony PSP'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20No-Intro%20-%20Sony%20-%20PlayStation%20Portable%20%28PSN%29%20%28Decrypted%29.torrent",
+        "format": "zip",
+        "note": "No-Intro PSN (digital) PSP set. RA tags PSP digital releases NO-INTRO, not REDUMP — Redump covers physical UMDs — so PSN titles like Trails in the Sky SC (USA) (PSN) (Disc 1/2) live ONLY here. The RA-set and Arquivista PSP sources carry UMD dumps and can never match them. Decrypted first: its .iso hashes to RA directly."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20No-Intro%20-%20Sony%20-%20PlayStation%20Portable%20%28PSN%29%20%28Encrypted%29.torrent",
+        "format": "zip",
+        "note": "No-Intro PSN (digital) PSP set. RA tags PSP digital releases NO-INTRO, not REDUMP — Redump covers physical UMDs — so PSN titles like Trails in the Sky SC (USA) (PSN) (Disc 1/2) live ONLY here. The RA-set and Arquivista PSP sources carry UMD dumps and can never match them. Decrypted first: its .iso hashes to RA directly."
+      }
+    ],
+    "dreamcast": [
+      {
+        "region": "ALL",
+        "item": "sega_dreamcast",
+        "layout": "zip",
+        "suffix": " ({Region}).zip",
+        "format": "gdi/chd-in-zip",
+        "note": "region in name: (Japan)/(USA)/(Europe)/(UK)/(En,Fr,De..)"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Sega%20Dreamcast.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Sega Dreamcast'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "neogeocd": [
+      {
+        "region": "ALL",
+        "item": "snk-neo-geo-cd-redump-collection",
+        "layout": "direct",
+        "suffix": " ({Region}).chd",
+        "format": "chd",
+        "cid": 56,
+        "hash": "neogeocd_chd",
+        "restricted": false
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20SNK%20Neo%20Geo%20CD.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'SNK Neo Geo CD'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "pcenginecd": [
+      {
+        "region": "ALL",
+        "item": "chd_pcecd",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 76,
+        "hash": "pcenginecd_chd",
+        "restricted": false,
+        "note": "Redump CHDs under CHD-PCECD/ (JP) + CHD-TGCD/ (US); title-fuzzy match, hash-verified"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20NEC%20TurboGrafx-CD.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'NEC TurboGrafx-CD'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "megacd": [
+      {
+        "region": "ALL",
+        "item": "SEGACD_CHD_PLUS",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 9,
+        "hash": "segacd_chd",
+        "restricted": false,
+        "note": "Redump CHDs, flat, abbreviated region tags (U)/(J)/(E); title-fuzzy + hash-verified"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Sega%20CD.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Sega CD'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "saturn": [
+      {
+        "region": "ALL",
+        "item": "chd_saturn",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 39,
+        "hash": "saturn_chd",
+        "restricted": false,
+        "note": "Redump Saturn CHDs under CHD-Saturn/<Region>/ subdirs; basename title-key match, hash-verified"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Sega%20Saturn.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Sega Saturn'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "3do": [
+      {
+        "region": "ALL",
+        "item": "recalbox-panasonic-3do-1g1r-en-retroninjasamurai",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 43,
+        "hash": "3do_chd",
+        "restricted": false,
+        "note": "Recalbox 3DO 1G1R En>Ja CHD set; basename title-key match, hash-verified"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20Redump%20-%20Panasonic%20-%203DO%20Interactive%20Multiplayer.torrent",
+        "format": "bincue-in-zip",
+        "cid": 43,
+        "hash": "3do",
+        "note": "FULL Redump Panasonic 3DO set (691 entries), torrent-only via minerva-archive.org. 3DO gets new RA sets rarely, but when it does they are Redump dumps, and the existing recalbox 1G1R item is a curated subset that lacks them (235 title-keys, no 'Sex (USA)' = RA 17308). Tried after the HTTP sources because torrent transport is slower. Per-game .zip holding bin/cue. NB the magnet's so= index is 0-based while aria2c --select-file is 1-based; the sourcer is immune because _torrent_index reads aria2c's own 1-based index."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%203DO%20Interactive%20Multiplayer.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] '3DO Interactive Multiplayer'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "nds": [
+      {
+        "region": "ALL",
+        "item": "EmuparadiseNDSROMset",
+        "layout": "7z-per-game",
+        "path": "Emuparadise.NDS.ROM.set/<range>/",
+        "naming": "NNNN - Title (R)(Dumper).7z",
+        "format": "nds-in-7z",
+        "cid": 18,
+        "hash": "nds",
+        "note": "title-fuzzy match; region codes (U)/(E)/(J); 6531 files across numbered ranges"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://archive.org/download/minerva-myrient-no-intro-nintendo-nintendo-ds-decrypted/Minerva_Myrient%20-%20No-Intro%20-%20Nintendo%20-%20Nintendo%20DS%20%28Decrypted%29.torrent",
+        "format": "nds-in-zip",
+        "cid": 18,
+        "hash": "nds",
+        "note": "FULL No-Intro Nintendo DS (Decrypted) set, torrent-only post-Myrient. Per-game .zip (each holds one .nds); 225GiB / ~11.6k DS files, selective single-file leech via aria2c webseed (archive.org GetRight, no live swarm needed; needs ia.ini auth cookie for the .torrent). Decrypted ROMs reproduce the RA DS hash (rcheevos normalizes) — verified: 'Touch Detective 2 1-2 (USA).nds' -> e261d0b0709c9b3709acf8c5839b4cb4. Makes the whole No-Intro DS set A-Z (incl. T titles the ni-n-ds-dec 0-A partial lacks) hash-gate sourceable."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%20DS.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo DS'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "wii": [
+      {
+        "kind": "mariocube",
+        "base": "https://repo.mariocube.com/WADs/_WiiWare, VC, DLC, Channels & IOS",
+        "format": "wad",
+        "note": "alphabetized WiiWare/VC WADs by first letter — WiiWare/VC/Channels ONLY, no retail discs"
+      },
+      {
+        "region": "ALL",
+        "item": "Wii-Redump-2024-Individual-Games-Part1",
+        "layout": "direct",
+        "suffix": ".zip",
+        "format": "rvz-in-zip",
+        "note": "PREFERRED retail Wii source, listed ahead of Arquivista on purpose. Six sibling items Part1..Part6, ~3740 per-game .zip across them, all regions, none dark, plain HTTP (no torrent/swarm). Filenames are EXACT Redump names, which is what makes them title-key-match RA hash names — the whole point, since Arquivista's '<Title> (US).rvz' labels are unreliable: 'Marble Saga - Kororinpa (US).rvz' there is 584MB and hashes f7342347…, i.e. the DEMO, while RA wants the 0.87GB (USA) (En,Fr,Es) dump. A game is in exactly ONE part, so all six must be registered. WiiHasher unzips it itself, so the plain _try path handles these."
+      },
+      {
+        "region": "ALL",
+        "item": "Wii-Redump-2024-Individual-Games-Part2",
+        "layout": "direct",
+        "suffix": ".zip",
+        "format": "rvz-in-zip"
+      },
+      {
+        "region": "ALL",
+        "item": "Wii-Redump-2024-Individual-Games-Part3",
+        "layout": "direct",
+        "suffix": ".zip",
+        "format": "rvz-in-zip"
+      },
+      {
+        "region": "ALL",
+        "item": "Wii-Redump-2024-Individual-Games-Part4",
+        "layout": "direct",
+        "suffix": ".zip",
+        "format": "rvz-in-zip"
+      },
+      {
+        "region": "ALL",
+        "item": "Wii-Redump-2024-Individual-Games-Part5",
+        "layout": "direct",
+        "suffix": ".zip",
+        "format": "rvz-in-zip"
+      },
+      {
+        "region": "ALL",
+        "item": "Wii-Redump-2024-Individual-Games-Part6",
+        "layout": "direct",
+        "suffix": ".zip",
+        "format": "rvz-in-zip"
+      },
+      {
+        "region": "US",
+        "item": "Wii-p2-US-Arquivista",
+        "layout": "direct",
+        "suffix": " (US).rvz",
+        "format": "rvz",
+        "restricted": true,
+        "note": "Retail Wii discs, bare .rvz '<Title> (US).rvz'. US/EU are split A-Z as p1 (# - K) / p2 (L - S) / p3 (T - Z). DELIBERATELY ABSENT: Wii-p1-US-Arquivista and Wii-p2-EU-Arquivista are is_dark=true (withdrawn) — their /metadata still answers HTTP 200 with a ~260-byte dark stub and ZERO files, so a status-code check looks healthy while the source silently contributes nothing. Consequence: US titles # - K and EU titles L - S have no Arquivista route and fall through to the Minerva torrent. Re-check periodically; un-darking is the cheapest fix for that gap."
+      },
+      {
+        "region": "US",
+        "item": "Wii-p3-US-Arquivista",
+        "layout": "direct",
+        "suffix": " (US).rvz",
+        "format": "rvz",
+        "restricted": true
+      },
+      {
+        "region": "EU",
+        "item": "Wii-p1-EU-Arquivista",
+        "layout": "direct",
+        "suffix": " (EU).rvz",
+        "format": "rvz",
+        "restricted": true
+      },
+      {
+        "region": "EU",
+        "item": "Wii-p3-EU-Arquivista",
+        "layout": "direct",
+        "suffix": " (EU).rvz",
+        "format": "rvz",
+        "restricted": true
+      },
+      {
+        "region": "JP",
+        "item": "Wii-p1-JP-Arquivista",
+        "layout": "direct",
+        "suffix": " (JP).rvz",
+        "format": "rvz",
+        "restricted": true,
+        "note": "JP retail is a SINGLE part covering the whole alphabet (462 .rvz, 007 - Quantum of Solace -> Zenkoku Dekotora Matsuri), not split like US/EU. Does NOT contain Zero - Tsukihami no Kamen (it has Zero - Shinku no Chou); use wii-ntsc-j-redump below for that."
+      },
+      {
+        "region": "JP",
+        "item": "wii-ntsc-j-redump",
+        "layout": "direct",
+        "suffix": ".7z",
+        "format": "iso-in-7z",
+        "note": "Wii NTSC-J Redump, 155 games as per-game .7z under 'Wii[NTSC-J]/<Title> [NTSC-J] [<GameID>]/'. _item_index keys on the BASENAME so the subdirs are transparent, and _title_key drops the [..] tags — 'Zero Tsukihami no Kamen [NTSC-J] [RVL-R4ZJ-JPN].7z' keys to ZERO TSUKIHAMI NO KAMEN and matches RA 34874. WiiHasher extracts .7z itself (_extract_disc_archive), so the plain HTTP _try path handles it — no torrent needed. Fills the JP gaps Wii-p1-JP-Arquivista lacks."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20Redump%20-%20Nintendo%20-%20Wii%20-%20NKit%20RVZ%20%5Bzstd-19-128k%5D.torrent",
+        "format": "rvz-in-zip",
+        "cid": 19,
+        "hash": "wii",
+        "note": "Minerva fallback — [RA Sets] 'Redump - Nintendo - Wii - NKit RVZ [zstd-19-128k]'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20T-En%20Collection%20-%20Nintendo%20-%20Wii%20%5BT-En%5D%20Collection.torrent",
+        "format": "rvz-in-zip",
+        "cid": 19,
+        "hash": "wii",
+        "note": "Minerva fallback — [RA Sets] 'T-En Collection - Nintendo - Wii [T-En] Collection'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "ps2": [
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-0-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-a-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-b-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-c-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-d0-dm-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-dn-dz-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-e-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-f-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-g-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-h-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-i-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-j-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-k-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-l-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-m0-mm-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-mn-mz-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-n-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-o0-om-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-on-oz-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-p-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-q-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-r-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-s0-sh-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-si-so-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-sp-sq-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-sr-sz-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-t-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-u-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-v-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-w-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-x-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-y-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "item": "sony-playstation-2-z-redump-collection",
+        "layout": "direct",
+        "format": "chd",
+        "cid": 21
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Sony%20Playstation%202.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Sony Playstation 2'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "ndsi": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20No-Intro%20-%20Nintendo%20-%20Nintendo%20DSi%20%28Digital%29.torrent",
+        "format": "nds-in-zip",
+        "cid": 78,
+        "hash": "nds",
+        "note": "FULL No-Intro Nintendo DSi (Digital) set, 1068 per-game .zip entries, hosted by minerva-archive.org (Myrient successor). Minerva is a TORRENT INDEX ONLY — its /rom?id=N pages expose no direct HTTP file URL, just the set .torrent + a magnet, which is why no download link is derivable by browsing. That is not a blocker: selective single-file leech via aria2c --select-file gets one ROM without the set. Verified 2026-08-05: 'Date Or Ditch (Europe, Australia).zip' -> afb08aa0bab13e132574db54af0f37d9, the exact RA-accepted dump. TRAP: the magnet's so= index is 0-BASED, aria2c --select-file is 1-BASED (so=292 is aria2c 293). The sourcer is immune because _torrent_index derives indexes from aria2c --show-files itself; only hand-reading so= off a magnet hits this."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%20DSi.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo DSi'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "pc8800": [
+      {
+        "region": "US",
+        "item": "necpc8801_BT",
+        "layout": "zip",
+        "prefix": "RA - NEC PC-8801/",
+        "suffix": ".zip",
+        "format": "zip",
+        "note": "[RA Sets] RA-curated collection — Fangs / The Scheme / Digital Devil Story all present as .d88 zips"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20NEC%20PC-8801.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'NEC PC-8801'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20NEC.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - NEC'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "appleii": [
+      {
+        "region": "US",
+        "item": "apple-2_BT",
+        "layout": "zip",
+        "prefix": "RA - Apple II/",
+        "suffix": ".zip",
+        "format": "zip",
+        "note": "[RA Sets] RA-curated collection — has 'La Femme qui ne supportait pas les ordinateurs...'"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Apple%20II.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Apple II'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Apple.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Apple'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "n64": [
+      {
+        "region": "US",
+        "item": "n64_bt",
+        "layout": "zip",
+        "prefix": "RA - Nintendo 64/",
+        "suffix": ".zip",
+        "format": "zip",
+        "note": "[RA Sets] RA-curated collection — SM64 hack sets incl. the Shining Stars family"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%2064.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo 64'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "amstradcpc": [
+      {
+        "region": "US",
+        "item": "Amstrad-CPC_BT",
+        "layout": "zip",
+        "prefix": "RA - Amstrad CPC/",
+        "suffix": ".zip",
+        "format": "zip",
+        "note": "[RA Sets] RA-curated collection — fallback for the CPC set"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Amstrad%20CPC.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Amstrad CPC'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Amstrad.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Amstrad'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "arduboy": [
+      {
+        "region": "US",
+        "item": "arduboy_BT",
+        "layout": "zip",
+        "prefix": "RA - Arduboy/",
+        "suffix": ".zip",
+        "format": "zip",
+        "note": "[RA Sets] RA-curated collection — fallback for Arduboy homebrew"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Arduboy.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Arduboy'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Arduboy.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Arduboy'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "gbc": [
+      {
+        "region": "US",
+        "item": "gbc_bt",
+        "layout": "zip",
+        "prefix": "RA - Nintendo Game Boy Color/",
+        "suffix": ".zip",
+        "format": "zip",
+        "note": "[RA Sets] RA-curated collection — fallback for GBC homebrew/hacks"
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%20Game%20Boy%20Color.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo Game Boy Color'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "msx": [
+      {
+        "region": "JP",
+        "item": "princess-maker-japan-en-v-1.0-teo-lopez-del-castillo",
+        "layout": "zip",
+        "prefix": "RA - Microsoft MSX/",
+        "suffix": ".zip",
+        "format": "zip",
+        "note": "[RA Sets] MSX Collection. The No-Intro MSX/MSX2 cart zips do not hold the DISK games (SD Snatcher, Aleste 2, Princess Maker) whose patch bases were reported unsourceable."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Microsoft%20MSX.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Microsoft MSX'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Microsoft.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Microsoft'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "arcade": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Arcade.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Arcade'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "arcadia2001": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Emerson%20Arcadia%202001.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Emerson Arcadia 2001'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Emerson.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Emerson'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "atari2600": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Atari%202600.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Atari 2600'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "atari7800": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Atari%207800.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Atari 7800'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "atarilynx": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Atari%20Lynx.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Atari Lynx'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "atomiswave": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Arcade.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Arcade'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "channelf": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Fairchild%20Channel%20F.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Fairchild Channel F'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Fairchild.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Fairchild'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "colecovision": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Colecovision.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Colecovision'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Coleco.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Coleco'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "elektor": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Elektor%20TV%20Games%20Computer.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Elektor TV Games Computer'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "fds": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%20Famicom%20Disk%20System.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo Famicom Disk System'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "gamegear": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Sega%20Game%20Gear.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Sega Game Gear'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "gb": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%20Game%20Boy.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo Game Boy'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "gba": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%20Game%20Boy%20Advance.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo Game Boy Advance'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "intellivision": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Mattel%20Intellivision.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Mattel Intellivision'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Mattel.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Mattel'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "interton": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Interton%20VC%204000.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Interton VC 4000'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "jaguar": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Atari%20Jaguar.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Atari Jaguar'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "jaguarcd": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Atari%20Jaguar%20CD.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Atari Jaguar CD'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "mastersystem": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Sega%20Master%20System.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Sega Master System'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "megadrive": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Sega%20Genesis.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Sega Genesis'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "megaduck": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Mega%20Duck.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Mega Duck'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "msx2": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Microsoft%20MSX.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Microsoft MSX'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Microsoft.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Microsoft'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "n64dd": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%2064.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo 64'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "naomi": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Arcade.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Arcade'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "naomi2": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Arcade.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Arcade'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "neogeo": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Arcade.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Arcade'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "neogeomvs": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Arcade.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Arcade'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "nes": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%20Entertainment%20System.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo Entertainment System'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "ngp": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20SNK%20Neo%20Geo%20Pocket.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'SNK Neo Geo Pocket'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "ngpc": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20SNK%20Neo%20Geo%20Pocket.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'SNK Neo Geo Pocket'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "odyssey2": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Magnavox%20Odyssey%202.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Magnavox Odyssey 2'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Magnavox.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Magnavox'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "pcengine": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20NEC%20TurboGrafx-16.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'NEC TurboGrafx-16'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "pcfx": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20NEC%20PC-FX.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'NEC PC-FX'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20NEC.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - NEC'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "pokemini": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%20Pokemon%20Mini.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo Pokemon Mini'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "satellaview": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Super%20Nintendo%20Entertainment%20System.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Super Nintendo Entertainment System'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "sega32x": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Sega%2032X.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Sega 32X'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "sg1000": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Sega%20SG-1000.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Sega SG-1000'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "snes": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Super%20Nintendo%20Entertainment%20System.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Super Nintendo Entertainment System'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "sufami": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Super%20Nintendo%20Entertainment%20System.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Super Nintendo Entertainment System'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "supergrafx": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20NEC%20TurboGrafx-16.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'NEC TurboGrafx-16'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "supervision": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Watara%20Supervision.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Watara Supervision'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Watara.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Watara'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "uzebox": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Uzebox.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Uzebox'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "vectrex": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20GCE%20Vectrex.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'GCE Vectrex'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20GCE.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - GCE'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "virtualboy": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20Nintendo%20Virtual%20Boy.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'Nintendo Virtual Boy'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "wasm4": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20WASM-4.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'WASM-4'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      }
+    ],
+    "wonderswan": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20WonderSwan.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'WonderSwan'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Bandai.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Bandai'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ],
+    "wonderswancolor": [
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20RetroAchievements%20-%20RA%20-%20WonderSwan.torrent",
+        "format": "zip",
+        "note": "Minerva fallback — [RA Sets] 'WonderSwan'. Served from minerva-archive.org, NOT archive.org: the whole point of this fallback is the case where archive.org is 503-ing or an item is withdrawn, and the archive.org-hosted copy of these same torrents dies with it (verified 2026-08-16 — archive.org 503, minerva 200). Torrents are tried after every HTTP source and the RA hash gate decides."
+      },
+      {
+        "region": "ALL",
+        "kind": "torrent",
+        "torrent_url": "https://minerva-archive.org/assets/Minerva_Myrient_v0.3/Minerva_Myrient%20-%20TOSEC%20-%20Bandai.torrent",
+        "format": "zip",
+        "note": "Minerva/TOSEC fallback — 'TOSEC - Bandai'. TOSEC is indexed by manufacturer, so this set covers every machine that maker built. It is registered because RA's hash names for home computers use TOSEC formatting ('Seymor - Take One (1991)(Codemasters).dsk'), which No-Intro and Redump naming never matches — Seymour: Take One! and Donald's Alphabet Chase both sat unsourceable while present here. Tried after the RA-set torrent."
+      }
+    ]
+  },
+  "cart_systems": {
+    "amstradcpc": {
+      "label": "Amstrad CPC",
+      "cid": 37,
+      "zips": [
+        "Amstrad - CPC (Misc).zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "appleii": {
+      "label": "Apple II",
+      "cid": 38,
+      "zips": [
+        "Apple - II (WOZ).zip"
+      ],
+      "note": "No-Intro Apple II is flux/WOZ preservation — may NOT match RA hashes (unverified)",
+      "status": "uncertain"
+    },
+    "atari2600": {
+      "label": "Atari 2600",
+      "cid": 25,
+      "zips": [
+        "Atari - 2600.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "atari7800": {
+      "label": "Atari 7800",
+      "cid": 51,
+      "zips": [
+        "Atari - 7800 (A78).zip",
+        "Atari - 7800 (BIN).zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "jaguar": {
+      "label": "Atari Jaguar",
+      "cid": 17,
+      "zips": [
+        "Atari - Jaguar (J64).zip",
+        "Atari - Jaguar (ROM).zip",
+        "Atari - Jaguar (ABS).zip",
+        "Atari - Jaguar (COF).zip",
+        "Atari - Jaguar (JAG).zip"
+      ],
+      "note": "verify by md5-set across cart formats",
+      "status": "uncertain"
+    },
+    "atarilynx": {
+      "label": "Atari Lynx",
+      "cid": 13,
+      "zips": [
+        "Atari - Lynx (LNX).zip",
+        "Atari - Lynx (BLL).zip",
+        "Atari - Lynx (LYX).zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "wonderswan": {
+      "label": "Bandai WonderSwan",
+      "cid": 53,
+      "zips": [
+        "Bandai - WonderSwan.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "wonderswancolor": {
+      "label": "Bandai WonderSwan Color",
+      "cid": 53,
+      "zips": [
+        "Bandai - WonderSwan Color.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "colecovision": {
+      "label": "Coleco ColecoVision",
+      "cid": 44,
+      "zips": [
+        "Coleco - ColecoVision.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "megaduck": {
+      "label": "Creatronic Mega Duck",
+      "cid": 69,
+      "zips": [
+        "Welback - Mega Duck.zip"
+      ],
+      "note": "No-Intro labels it 'Welback'",
+      "status": "uncertain"
+    },
+    "elektor": {
+      "label": "Elektor TV Games Computer",
+      "cid": 75,
+      "zips": [],
+      "note": "",
+      "status": "not_in_archive"
+    },
+    "arcadia2001": {
+      "label": "Emerson Arcadia 2001",
+      "cid": 73,
+      "zips": [
+        "Emerson - Arcadia 2001.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "channelf": {
+      "label": "Fairchild Channel F",
+      "cid": 57,
+      "zips": [
+        "Fairchild - Channel F.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "vectrex": {
+      "label": "GCE Vectrex",
+      "cid": 46,
+      "zips": [
+        "GCE - Vectrex.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "interton": {
+      "label": "Interton VC 4000",
+      "cid": 74,
+      "zips": [
+        "Interton - VC 4000.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "odyssey2": {
+      "label": "Magnavox Odyssey 2",
+      "cid": 23,
+      "zips": [
+        "Magnavox - Odyssey 2.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "intellivision": {
+      "label": "Mattel Intellivision",
+      "cid": 45,
+      "zips": [
+        "Mattel - Intellivision.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "msx": {
+      "label": "MSX",
+      "cid": 29,
+      "zips": [
+        "Microsoft - MSX.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "msx2": {
+      "label": "MSX2+",
+      "cid": 29,
+      "zips": [],
+      "note": "",
+      "status": "not_in_archive",
+      "absent_zips": [
+        "Microsoft - MSX2+.zip"
+      ]
+    },
+    "pc8800": {
+      "label": "NEC PC-8800",
+      "cid": 47,
+      "zips": [
+        "NEC - PC-88 (Flux).zip"
+      ],
+      "note": "only flux preservation in archive; RA uses .d88 (likely unusable, unverified)",
+      "status": "uncertain"
+    },
+    "pcengine": {
+      "label": "NEC PC Engine",
+      "cid": 8,
+      "zips": [
+        "NEC - PC Engine - TurboGrafx-16.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "n64": {
+      "label": "Nintendo 64",
+      "cid": 2,
+      "zips": [
+        "Nintendo - Nintendo 64 (BigEndian).zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "n64dd": {
+      "label": "Nintendo 64DD",
+      "cid": 2,
+      "zips": [
+        "Nintendo - Nintendo 64DD.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "ndsi": {
+      "label": "Nintendo DSi",
+      "cid": 78,
+      "zips": [
+        "Nintendo - Nintendo DSi (Decrypted).zip"
+      ],
+      "note": "decrypted dumps",
+      "status": "uncertain"
+    },
+    "nes": {
+      "label": "NES / Famicom",
+      "cid": 7,
+      "zips": [
+        "Nintendo - Nintendo Entertainment System (Headered).zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "fds": {
+      "label": "Famicom Disk System",
+      "cid": 81,
+      "zips": [
+        "Nintendo - Family Computer Disk System (FDS).zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "gb": {
+      "label": "Game Boy",
+      "cid": 4,
+      "zips": [
+        "Nintendo - Game Boy.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "gba": {
+      "label": "Game Boy Advance",
+      "cid": 5,
+      "zips": [
+        "Nintendo - Game Boy Advance.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "gbc": {
+      "label": "Game Boy Color",
+      "cid": 6,
+      "zips": [
+        "Nintendo - Game Boy Color.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "pokemini": {
+      "label": "Pokemon Mini",
+      "cid": 24,
+      "zips": [
+        "Nintendo - Pokemon Mini.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "satellaview": {
+      "label": "Satellaview",
+      "cid": 3,
+      "zips": [
+        "Nintendo - Satellaview.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "sufami": {
+      "label": "Sufami Turbo",
+      "cid": 3,
+      "zips": [
+        "Nintendo - Sufami Turbo.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "virtualboy": {
+      "label": "Virtual Boy",
+      "cid": 28,
+      "zips": [
+        "Nintendo - Virtual Boy.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "sega32x": {
+      "label": "Sega 32X",
+      "cid": 10,
+      "zips": [
+        "Sega - 32X.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "gamegear": {
+      "label": "Sega Game Gear",
+      "cid": 15,
+      "zips": [
+        "Sega - Game Gear.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "megadrive": {
+      "label": "Sega Genesis / Mega Drive",
+      "cid": 1,
+      "zips": [
+        "Sega - Mega Drive - Genesis.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "mastersystem": {
+      "label": "Sega Master System / Mark III",
+      "cid": 11,
+      "zips": [
+        "Sega - Master System - Mark III.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "sg1000": {
+      "label": "Sega SG-1000",
+      "cid": 33,
+      "zips": [
+        "Sega - SG-1000.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "ngp": {
+      "label": "SNK Neo Geo Pocket",
+      "cid": 14,
+      "zips": [
+        "SNK - NeoGeo Pocket.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "ngpc": {
+      "label": "SNK Neo Geo Pocket Color",
+      "cid": 14,
+      "zips": [
+        "SNK - NeoGeo Pocket Color.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "snes": {
+      "label": "SNES / Super Famicom",
+      "cid": 3,
+      "zips": [
+        "Nintendo - Super Nintendo Entertainment System.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    },
+    "supervision": {
+      "label": "Watara Supervision",
+      "cid": 63,
+      "zips": [
+        "Watara - Supervision.zip"
+      ],
+      "note": "",
+      "status": "ok"
+    }
+  },
+  "arcade": {
+    "item": "fbneo_RetroRusty",
+    "layout": "zip-view nested in fbneo.zip",
+    "url": "/download/fbneo_RetroRusty/fbneo.zip/<setname>.zip",
+    "cid": 27,
+    "hash": "arcade",
+    "note": "filename-hashed: match by RA arcade hash NAME (= FBNeo short set name); no content md5 verify (rahash 27 hashes the name)"
+  },
+  "arcade_flycast": {
+    "item": "arcade-flycast-champion-collection",
+    "layout": "zip-view nested per system zip",
+    "restricted": true,
+    "systems": {
+      "naomi": [
+        "Sega NAOMI.zip",
+        "Sega NAOMI GD-ROM System.zip"
+      ],
+      "naomi2": [
+        "Sega NAOMI 2.zip"
+      ],
+      "atomiswave": [
+        "Sammy Atomiswave.zip"
+      ]
+    },
+    "bios": "Arcade (Flycast) BIOS Files.zip",
+    "note": "arcade=filename-hashed md5(setname); RA console 27; Batocera folders naomi/naomi2/atomiswave"
+  }
+}

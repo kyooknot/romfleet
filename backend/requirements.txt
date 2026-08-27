@@ -1,0 +1,17 @@
+# RomFleet server — Phase 1
+pydantic-settings>=2.0
+pyyaml>=6.0
+httpx>=0.27
+tenacity>=8.0
+structlog>=24.0
+elasticsearch>=8.0,<9.0
+aiohttp>=3.9
+SQLAlchemy>=2.0
+psycopg2-binary>=2.9
+typer>=0.12
+# Phase-1+ (API/workers) — installed now so the app runs unchanged
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+celery>=5.3
+redis>=5.0
