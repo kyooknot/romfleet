@@ -189,6 +189,7 @@ def apply_version_dedup(db, folder: str | None = None, key: str = "slot") -> dic
     p = plan_version_dedup(db, folder, key)
     removed = freed = 0
     errors = []
+    missing = []
     for grp in p["plan"]:
         for d in grp["drop"]:
             try:
@@ -196,15 +197,22 @@ def apply_version_dedup(db, folder: str | None = None, key: str = "slot") -> dic
                 if fp.is_file():
                     freed += fp.stat().st_size
                     fp.unlink()
+                else:
+                    # A row whose path no longer resolves. Dropping it still cleans the DB, but
+                    # NOTHING was freed, and the file may well be a live untracked copy under
+                    # the other root. Counting it as a removal reports a deletion that did not
+                    # happen -- report it separately instead.
+                    missing.append({"id": d["id"], "file": d["file"], "path": d["path"]})
                 db.query(RomFile).filter(RomFile.id == d["id"]).delete(synchronize_session=False)
                 removed += 1
             except Exception as e:  # noqa
                 errors.append({"id": d["id"], "file": d["file"], "err": str(e)[:120]})
                 log.warning("version dedup remove failed", file=d["file"], err=str(e)[:120])
     db.commit()
-    log.info("version dedup applied", folder=folder or "*", key=key,
-             removed=removed, freed_bytes=freed)
+    log.info("version dedup applied", folder=folder or "*", key=key, removed=removed,
+             freed_bytes=freed, missing_on_disk=len(missing))
     return {"folder": folder, "key": key, "groups": p["groups"], "removed": removed,
+            "files_deleted": removed - len(missing), "missing_on_disk": missing,
             "freed_bytes": freed, "errors": errors, "per_system": p["per_system"]}
 
 
@@ -213,6 +221,7 @@ def apply_dedup(db, folder: str | None = None) -> dict:
     p = plan_dedup(db, folder)
     removed = freed = 0
     errors = []
+    missing = []
     for grp in p["plan"]:
         for d in grp["drop"]:
             try:
@@ -220,13 +229,16 @@ def apply_dedup(db, folder: str | None = None) -> dict:
                 if fp.is_file():
                     freed += fp.stat().st_size
                     fp.unlink()
+                else:
+                    missing.append({"id": d["id"], "file": d["file"], "path": d["path"]})
                 db.query(RomFile).filter(RomFile.id == d["id"]).delete(synchronize_session=False)
                 removed += 1
             except Exception as e:  # noqa  (never abort the batch on one bad file)
                 errors.append({"id": d["id"], "file": d["file"], "err": str(e)[:120]})
                 log.warning("dedup remove failed", file=d["file"], err=str(e)[:120])
     db.commit()
-    log.info("dedup applied", folder=folder or "*", groups=p["groups"],
-             removed=removed, freed_bytes=freed)
+    log.info("dedup applied", folder=folder or "*", groups=p["groups"], removed=removed,
+             freed_bytes=freed, missing_on_disk=len(missing))
     return {"folder": folder, "groups": p["groups"], "removed": removed,
+            "files_deleted": removed - len(missing), "missing_on_disk": missing,
             "freed_bytes": freed, "errors": errors, "per_system": p["per_system"]}
