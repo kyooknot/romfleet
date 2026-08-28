@@ -113,7 +113,7 @@ def _version_plan_for_folder(db, folder: str, key: str) -> list[dict]:
     then best score (identical to organize's 1G1R primary selection)."""
     from sqlalchemy.orm import selectinload
     from app.services.organize import (_effective, _version_slot, _is_english, _score,
-                                        _KEEP_ALL_1G1R, _KEEP_ALL_NAME)
+                                        _KEEP_ALL_1G1R, _KEEP_ALL_NAME, is_alt_dump)
     from app.core.scoring import get_scoring
 
     sysc, gate, selection = _effective(db, folder)
@@ -138,7 +138,12 @@ def _version_plan_for_folder(db, folder: str, key: str) -> list[dict]:
         for slot, sg in by_slot.items():
             if len(sg) < 2 or not slot:
                 continue
-            keep = max(sg, key=lambda r: (_is_english(r, gate), -_score(r, gate, cfg)))
+            # A redundant dump ties on region and language with the file it duplicates, so
+            # scoring alone leaves the winner to dict order. Break the tie explicitly, and
+            # keep the last two terms so the choice is deterministic across runs.
+            keep = max(sg, key=lambda r: (_is_english(r, gate), -_score(r, gate, cfg),
+                                          not is_alt_dump(r.filename or ""),
+                                          -len(r.filename or ""), r.filename or ""))
             keep_auth = _authors(keep.filename or "") if key == "core" else set()
             drop = []
             for r in sg:

@@ -96,6 +96,15 @@ _VS_EXT_RE = re.compile(r"\.[a-z0-9]{2,4}$", re.I)
 _VS_REG_RE = re.compile(r"\s*\(((?:" + _VS_REG + r")(?:[,\s]+(?:" + _VS_REG + r"))*)\)", re.I)
 _VS_LNG_RE = re.compile(r"\s*\(((?:" + _VS_LNG + r")(?:[,\s]+(?:" + _VS_LNG + r"))*)\)", re.I)
 _VS_REV_RE = re.compile(r"\s*\((?:Rev\s*[\dA-Za-z]+|v[\d][\w.]*)\)", re.I)
+# Redump/No-Intro dump-quality tags. An "(Alt Dump)" is a SECOND DUMP OF THE SAME DISC, not a
+# different version, so it must share a slot with the plain file and lose the keeper contest.
+# Deliberately narrow: a bare "(Alt)" can mean an alternate *release*, so it is not included.
+_VS_DUMP_RE = re.compile(r"\s*\((?:Alt\s+Dump|Alt\s+Format)\)", re.I)
+
+
+def is_alt_dump(name: str) -> bool:
+    """True when the filename carries a redundant-dump tag."""
+    return bool(_VS_DUMP_RE.search(name or ""))
 # Fan-translation suffix at the END of a name: (En)[ (v1.0)] [ (Translator)] — collapse it
 # so a translation shares a 1G1R slot with its untranslated base (English then wins on
 # score). The trailing translator paren is guarded so it never eats a disc/part/episode tag.
@@ -112,6 +121,7 @@ def _version_slot(name: str) -> str:
     (collapse to one, best wins); different slot = a distinct disc / episode /
     hack-competition entry (keep all)."""
     n = _VS_EXT_RE.sub("", name)
+    n = _VS_DUMP_RE.sub("", n)    # a redundant dump shares a slot with the real file
     n = _VS_REG_RE.sub("", n)
     n = _VS_XLAT_RE.sub("", n)     # fan-translation suffix (En)(vX)(Translator) — collapse to base
     n = _VS_LNG_RE.sub("", n)
@@ -182,8 +192,14 @@ def build_plan(db: Session, folder: str) -> dict:
                 # part/episode/entry that the game-level canonical name would collapse.
                 by_slot.setdefault(_version_slot(r.filename or ""), []).append(r)
             for sg in by_slot.values():
+                # A redundant dump ties on region and language with the file it duplicates, so
+                # scoring alone would leave the winner to dict order and could quarantine the
+                # good file instead. Break the tie explicitly and deterministically.
                 primary_ids.add(max(sg, key=lambda r: (_is_english(r, gate),
-                                                       -_score(r, gate, cfg))).id)
+                                                       -_score(r, gate, cfg),
+                                                       not is_alt_dump(r.filename or ""),
+                                                       -len(r.filename or ""),
+                                                       r.filename or "")).id)
 
     actions = []
     seen_targets: dict[str, int] = {}
